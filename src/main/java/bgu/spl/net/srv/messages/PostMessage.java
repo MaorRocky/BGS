@@ -18,7 +18,7 @@ public class PostMessage {
     }
 
     private void getTaggedUsers() {
-        String tmp = new String(post);
+        String tmp = post;
         StringBuffer buffer = new StringBuffer(tmp);
         while (buffer.indexOf("@") != -1) {
             String tagToAdd = "";
