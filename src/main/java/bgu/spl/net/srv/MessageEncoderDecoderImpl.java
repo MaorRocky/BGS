@@ -26,7 +26,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         Message toSend = null;
         switch (nextShort) {
             case 1: //register
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
@@ -35,7 +35,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 break;
 
             case 2: //login
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
@@ -51,27 +51,25 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             case 4:
                 if (length == 4) {
                     numOfUsersBytes[0] = nextByte;
-                }
-                else if (length == 5) {
+                } else if (length == 5) {
                     numOfUsersBytes[1] = nextByte;
                     numOfUsers = bytesToShort(numOfUsersBytes);
-                }
-                else if (nextByte == 0) {
+                } else if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
-                if (nextZeroByteCounter == numOfUsers-1) {
+                if (nextZeroByteCounter == numOfUsers - 1) {
                     toSend = new FollowMessage(numOfUsers, popString());
                 }
                 break;
 
             case 5:
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     toSend = new PostMessage(popString());
                 }
                 break;
 
             case 6:
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
@@ -79,16 +77,16 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 break;
 
-            case 7:
+            case 7:/*TODO chcek if the user is logged in*/
                 toSend = new UserListMessage();
                 popString();
                 break;
 
             case 8:
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     toSend = new StatMessage(popString());
                 }
-
+                break;
         }
         return toSend;
     }
@@ -99,10 +97,9 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     }
 
 
-
-    private short bytesToShort(byte[] byteArr)  {
-        short result = (short)((byteArr[0] & 0xff) << 8);
-        result += (short)(byteArr[1] & 0xff);
+    private short bytesToShort(byte[] byteArr) {
+        short result = (short) ((byteArr[0] & 0xff) << 8);
+        result += (short) (byteArr[1] & 0xff);
         return result;
     }
 
