@@ -4,9 +4,11 @@ public class RegisterMessage extends Message {
     private String userName;
     private String password;
 
-    public RegisterMessage(String userName, String password) {
-        this.userName = userName;
-        this.password = password;
+
+    public RegisterMessage(String toProcess) {
+        userName = "";
+        password = "";
+        process(toProcess);
     }
 
     public String getUserName() {
@@ -15,5 +17,19 @@ public class RegisterMessage extends Message {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public void process(String toProcess) {
+        int index = 0;
+        while (toProcess.charAt(index) != '0') { //creating the userName
+            userName = userName + toProcess.charAt(index);
+            index ++;
+        }
+        index++;
+        while (index < toProcess.lastIndexOf('0')) {
+            password = password + toProcess.charAt(index);
+            index++;
+        }
     }
 }

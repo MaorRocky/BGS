@@ -8,10 +8,9 @@ public class FollowMessage extends Message {
     private List<String> usersToFollow;
     private int numOfUsersToFollow;
 
-    public FollowMessage(boolean follow, LinkedList<String> usersToFollow) {
+    public FollowMessage(boolean follow, String toProcess) {
         this.follow = follow;
-        this.usersToFollow = (LinkedList<String>)usersToFollow.clone();
-        numOfUsersToFollow = usersToFollow.size();
+        process(toProcess);
     }
 
     public boolean isFollow() {
@@ -24,5 +23,10 @@ public class FollowMessage extends Message {
 
     public int getNumOfUsersToFollow() {
         return numOfUsersToFollow;
+    }
+
+    @Override
+    public void process(String toProcess) {
+
     }
 }
