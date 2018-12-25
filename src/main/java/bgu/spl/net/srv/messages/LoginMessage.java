@@ -17,7 +17,7 @@ public class LoginMessage extends Message {
     }
 
     public void process(String toProcess) {
-        int index = 2;
+        int index = 0;
         while (toProcess.charAt(index) != '0') { //creating the userName
             userName = userName + toProcess.charAt(index);
             index ++;

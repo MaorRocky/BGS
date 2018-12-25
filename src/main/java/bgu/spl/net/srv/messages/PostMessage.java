@@ -7,7 +7,7 @@ public class PostMessage extends Message {
     private String post;
     private List<String> taggedUsers;
 
-    public PostMessage(String post) {
+    public PostMessage(String toProcess) {
         this.post = post;
         taggedUsers = new LinkedList<>();
         findTaggedUsers();
@@ -34,5 +34,10 @@ public class PostMessage extends Message {
             buffer.delete(0, tag);
             taggedUsers.add(tagToAdd);
         }
+    }
+
+    @Override
+    public void process(String toProcess) {
+        
     }
 }

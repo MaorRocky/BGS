@@ -16,8 +16,8 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     private short numOfUsers;
 
     public Message decodeNextByte(byte nextByte) {
+        pushByte(nextByte);
         if (length < 2) {
-            pushByte(nextByte);
             return null;
         }
         if (length == 2) {
@@ -26,7 +26,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         Message toSend = null;
         switch (nextShort) {
             case 1: //register
-                pushByte(nextByte);
                 if (nextByte == 0) {
                     nextZeroByteCounter++;
                 }
@@ -36,7 +35,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 break;
 
             case 2: //login
-                pushByte(nextByte);
                 if (nextByte == 0) {
                     nextZeroByteCounter++;
                 }
@@ -51,14 +49,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 break;
 
             case 4:
-                pushByte(nextByte);
-                if (length == 3 && nextByte == 0) {
-                    follow = true;
-                }
-                else if (length == 3 && nextByte == 1) {
-                    follow = false;
-                }
-                else if (length == 4) {
+                if (length == 4) {
                     numOfUsersBytes[0] = nextByte;
                 }
                 else if (length == 5) {
@@ -69,9 +60,12 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == numOfUsers-1) {
-                    toSend = new FollowMessage(follow, popString());
+                    toSend = new FollowMessage(numOfUsers, popString());
                 }
                 break;
+
+            case 5:
+
 
 
 
@@ -91,7 +85,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     }
 
     private String popString() {
-        String result = new String(bytes, 0, length, StandardCharsets.UTF_8);
+        String result = new String(bytes, 2, length, StandardCharsets.UTF_8);
         length = 0;
         nextZeroByteCounter = 0;
         return result;
