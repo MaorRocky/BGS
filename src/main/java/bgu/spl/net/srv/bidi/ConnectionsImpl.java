@@ -6,12 +6,10 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
-    private boolean isReactor;
     private ConcurrentHashMap<Integer, ConnectionHandler<T>> clients;
 
-    public ConnectionsImpl(boolean isReactor) {
+    public ConnectionsImpl() {
         clients = new ConcurrentHashMap<>();
-        this.isReactor = isReactor;
     }
 
     public boolean send(int connectionId, T msg) {
@@ -36,9 +34,13 @@ public class ConnectionsImpl<T> implements Connections<T> {
         }
     }
 
-    public boolean addClient(int clientId) {
+    public boolean addClient(int clientId, ConnectionHandler handler) {
         if (!clients.containsKey(clientId)) {
-            clients.put
+            clients.put(clientId, handler);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 }

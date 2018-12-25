@@ -1,6 +1,6 @@
 package bgu.spl.net.srv.messages;
 
-public class PrivateMessage {
+public class PrivateMessage extends Message {
     private String receiverUser;
     private String content;
 

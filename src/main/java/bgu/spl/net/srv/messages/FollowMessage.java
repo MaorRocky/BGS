@@ -3,7 +3,7 @@ package bgu.spl.net.srv.messages;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FollowMessage {
+public class FollowMessage extends Message {
     private boolean follow;
     private List<String> usersToFollow;
     private int numOfUsersToFollow;

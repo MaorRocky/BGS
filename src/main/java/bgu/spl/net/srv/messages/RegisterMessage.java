@@ -1,6 +1,6 @@
 package bgu.spl.net.srv.messages;
 
-public class RegisterMessage {
+public class RegisterMessage extends Message {
     private String userName;
     private String password;
 

@@ -1,6 +1,6 @@
 package bgu.spl.net.srv.messages;
 
-public class StatusMessage {
+public class StatusMessage extends Message {
     private String userToCheck;
 
     public StatusMessage(String userToCheck) {

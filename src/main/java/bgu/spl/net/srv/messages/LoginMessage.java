@@ -1,6 +1,6 @@
 package bgu.spl.net.srv.messages;
 
-public class LoginMessage {
+public class LoginMessage extends Message {
     private String userName;
     private String password;
 
