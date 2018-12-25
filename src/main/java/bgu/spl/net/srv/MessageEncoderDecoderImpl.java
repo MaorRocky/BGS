@@ -51,13 +51,15 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             case 4:
                 if (length == 4) {
                     numOfUsersBytes[0] = nextByte;
-                } else if (length == 5) {
+                }
+                else if (length == 5) {
                     numOfUsersBytes[1] = nextByte;
                     numOfUsers = bytesToShort(numOfUsersBytes);
-                } else if (nextByte == '\0') {
+                }
+                else if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
-                if (nextZeroByteCounter == numOfUsers - 1) {
+                if (nextZeroByteCounter == numOfUsers-1) {
                     toSend = new FollowMessage(numOfUsers, popString());
                 }
                 break;
@@ -77,7 +79,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 break;
 
-            case 7:/*TODO chcek if the user is logged in*/
+            case 7:
                 toSend = new UserListMessage();
                 popString();
                 break;
@@ -87,19 +89,43 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     toSend = new StatMessage(popString());
                 }
                 break;
+
         }
         return toSend;
     }
 
     public byte[] encode(Message message) {
-        Class type = message.getClass();
+        byte[] toReturn;
+        if (message instanceof NotificationMessage) {
+            char type;
+            if (((NotificationMessage) message).isPrivate()) {
+                type = '0';
+            }
+            else {
+                type = '1';
+            }
+            Short s = 9;
+            byte[] opcode = shortToBytes(s);
+            byte[] user = ((NotificationMessage) message).getPostingUser().getBytes();
+            byte[] content = ((NotificationMessage) message).getContent().getBytes();
+            toReturn = new byte[3 + opcode.length + user.length + content.length];
+            for (int i = 0; i < opcode.length; i++) {
+                toReturn[i] = opcode[i];
+            }
+            toReturn[opcode.length] = (byte)type;
+            for (int j = 0; j < user.length; j++) {
+                toReturn[j + 1 + opcode.length] = user[j];
+            }
+            toReturn[]
 
+        }
     }
 
 
-    private short bytesToShort(byte[] byteArr) {
-        short result = (short) ((byteArr[0] & 0xff) << 8);
-        result += (short) (byteArr[1] & 0xff);
+
+    private short bytesToShort(byte[] byteArr)  {
+        short result = (short)((byteArr[0] & 0xff) << 8);
+        result += (short)(byteArr[1] & 0xff);
         return result;
     }
 
@@ -113,5 +139,13 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         length = 0;
         nextZeroByteCounter = 0;
         return result;
+    }
+
+    public byte[] shortToBytes(short num)
+    {
+        byte[] bytesArr = new byte[2];
+        bytesArr[0] = (byte)((num >> 8) & 0xFF);
+        bytesArr[1] = (byte)(num & 0xFF);
+        return bytesArr;
     }
 }
