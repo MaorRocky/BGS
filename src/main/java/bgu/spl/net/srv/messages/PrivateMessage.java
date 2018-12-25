@@ -4,9 +4,10 @@ public class PrivateMessage extends Message {
     private String receiverUser;
     private String content;
 
-    public PrivateMessage(String receiverUser, String content) {
-        this.receiverUser = receiverUser;
-        this.content = content;
+    public PrivateMessage(String toProcess) {
+        receiverUser = "";
+        content = "";
+        process(toProcess);
     }
 
     public String getReceiverUser() {
@@ -15,5 +16,20 @@ public class PrivateMessage extends Message {
 
     public String getContent() {
         return content;
+    }
+
+    @Override
+    public void process(String toProcess) {
+        int index = 0;
+        while (toProcess.charAt(index) != '0') {
+            receiverUser = receiverUser + toProcess.charAt(index);
+            index++;
+        }
+        index++;
+        while (index < toProcess.lastIndexOf('0')) {
+            content = content + toProcess.charAt(index);
+            index++;
+        }
+
     }
 }

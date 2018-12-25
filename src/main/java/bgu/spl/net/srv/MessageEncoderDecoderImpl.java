@@ -65,13 +65,40 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 break;
 
             case 5:
+                if (nextByte == 0) {
+                    toSend = new PostMessage(popString());
+                }
+                break;
 
+            case 6:
+                if (nextByte == 0) {
+                    nextZeroByteCounter++;
+                }
+                if (nextZeroByteCounter == 2) {
+                    toSend = new PrivateMessage(popString());
+                }
+                break;
 
+            case 7:
+                toSend = new UserListMessage();
+                popString();
+                break;
 
+            case 8:
+                if (nextByte == 0) {
+                    toSend = new StatMessage(popString());
+                }
 
         }
         return toSend;
     }
+
+    public byte[] encode(Message message) {
+        Class type = message.getClass();
+
+    }
+
+
 
     private short bytesToShort(byte[] byteArr)  {
         short result = (short)((byteArr[0] & 0xff) << 8);

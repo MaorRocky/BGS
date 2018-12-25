@@ -8,9 +8,8 @@ public class PostMessage extends Message {
     private List<String> taggedUsers;
 
     public PostMessage(String toProcess) {
-        this.post = post;
-        taggedUsers = new LinkedList<>();
-        findTaggedUsers();
+        process(toProcess);
+
     }
 
     public String getPost() {
@@ -38,6 +37,7 @@ public class PostMessage extends Message {
 
     @Override
     public void process(String toProcess) {
-        
+        post = toProcess.substring(0, toProcess.length()-1);
+        findTaggedUsers();
     }
 }
