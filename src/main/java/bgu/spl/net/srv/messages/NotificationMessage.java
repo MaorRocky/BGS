@@ -22,4 +22,6 @@ public class NotificationMessage extends Message {
     public String getContent() {
         return content;
     }
+
+
 }

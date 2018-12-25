@@ -26,7 +26,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         Message toSend = null;
         switch (nextShort) {
             case 1: //register
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
@@ -35,7 +35,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 break;
 
             case 2: //login
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
@@ -56,7 +56,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     numOfUsersBytes[1] = nextByte;
                     numOfUsers = bytesToShort(numOfUsersBytes);
                 }
-                else if (nextByte == 0) {
+                else if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == numOfUsers-1) {
@@ -65,13 +65,13 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 break;
 
             case 5:
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     toSend = new PostMessage(popString());
                 }
                 break;
 
             case 6:
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
@@ -85,17 +85,40 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 break;
 
             case 8:
-                if (nextByte == 0) {
+                if (nextByte == '\0') {
                     toSend = new StatMessage(popString());
                 }
+                break;
 
         }
         return toSend;
     }
 
     public byte[] encode(Message message) {
-        Class type = message.getClass();
+        byte[] toReturn;
+        if (message instanceof NotificationMessage) {
+            char type;
+            if (((NotificationMessage) message).isPrivate()) {
+                type = '0';
+            }
+            else {
+                type = '1';
+            }
+            Short s = 9;
+            byte[] opcode = shortToBytes(s);
+            byte[] user = ((NotificationMessage) message).getPostingUser().getBytes();
+            byte[] content = ((NotificationMessage) message).getContent().getBytes();
+            toReturn = new byte[3 + opcode.length + user.length + content.length];
+            for (int i = 0; i < opcode.length; i++) {
+                toReturn[i] = opcode[i];
+            }
+            toReturn[opcode.length] = (byte)type;
+            for (int j = 0; j < user.length; j++) {
+                toReturn[j + 1 + opcode.length] = user[j];
+            }
+            toReturn[]
 
+        }
     }
 
 
@@ -116,5 +139,13 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         length = 0;
         nextZeroByteCounter = 0;
         return result;
+    }
+
+    public byte[] shortToBytes(short num)
+    {
+        byte[] bytesArr = new byte[2];
+        bytesArr[0] = (byte)((num >> 8) & 0xFF);
+        bytesArr[1] = (byte)(num & 0xFF);
+        return bytesArr;
     }
 }
