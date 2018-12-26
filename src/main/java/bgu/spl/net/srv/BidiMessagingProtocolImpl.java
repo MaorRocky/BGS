@@ -3,6 +3,8 @@ package bgu.spl.net.srv;
 import bgu.spl.net.api.bidi.*;
 import bgu.spl.net.srv.messages.*;
 
+import java.util.List;
+
 public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMessagingProtocol<T> {
     private InformationHolder information = InformationHolder.getInstance();
     private int connectionId;
@@ -10,7 +12,7 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
 
 
     @Override
-        public void start(int connectionId, Connections connections) {
+    public void start(int connectionId, Connections connections) {
         this.connectionId = connectionId;
         this.connections = connections;
     }
@@ -21,12 +23,13 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
         String messageType = msg.getType();
         switch (messageType) {
             case "RegisterMessage":
-                RegisterMessage((RegisterMessage)msg);
+                RegisterMessage((RegisterMessage) msg);
                 break;
             case "LoginMessage":
-                LoginMessage((LoginMessage)msg);
+                LoginMessage((LoginMessage) msg);
                 break;
             case "LogoutMessage":
+                LogoutMessage();
                 break;
             case "FollowMessage":
                 break;
@@ -61,6 +64,24 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
         if (information.login(connectionId, message)) {
             AckMessage ack = new AckMessage((short) 2, null);
             connections.send(connectionId, ack);
+        } else {
+            ErrorMessage error = new ErrorMessage((short) 2);
+            connections.send(connectionId, error);
+        }
+    }
+
+    private void LogoutMessage() {
+        if (information.isLoggedIn(connectionId)) {
+            information.logOut(connectionId);
+            AckMessage ack = new AckMessage((short) 3, null);
+            connections.send(connectionId, ack);
+        }
+    }
+
+    private void FollowMessage(FollowMessage message) {
+        if (information.isLoggedIn(connectionId)){
+            List<String> list = message.getUsersToFollow();
+
         }
         else {
             ErrorMessage error = new ErrorMessage((short) 2);

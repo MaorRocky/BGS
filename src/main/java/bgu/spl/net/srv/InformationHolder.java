@@ -20,7 +20,7 @@ public class InformationHolder {
     private ConcurrentHashMap<Integer, LinkedList<Integer>> clientToFollowList = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, LinkedList<Integer>> clientToFollowers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, LinkedList<String>> clientToPostList = new ConcurrentHashMap<>();
-    ConnectionsImpl<Message> connections = new ConnectionsImpl<>();
+    private ConnectionsImpl<Message> connections = new ConnectionsImpl<>();
 
 
 
@@ -108,5 +108,10 @@ public class InformationHolder {
     }
 
 
+
+    public void logOut(int clientID){
+            loggedinClients.remove(clientID);
+
+    }
 
 }
