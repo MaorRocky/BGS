@@ -5,7 +5,7 @@ import bgu.spl.net.srv.messages.Message;
 
 import java.io.UncheckedIOException;
 
-public class BidiMessagingProtocol implements bgu.spl.net.api.bidi.BidiMessagingProtocol {
+public class BidiMessagingProtocolImpl implements bgu.spl.net.api.bidi.BidiMessagingProtocol {
     private int connectionId;
     private Connections connections;
 
