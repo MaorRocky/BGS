@@ -1,5 +1,7 @@
 package bgu.spl.net.srv.messages;
 
+import org.graalvm.compiler.graph.spi.Canonicalizable;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ public class PostMessage extends Message {
             taggedUsers.add(tagToAdd);
         }
     }
+
 
 
     public void process(String toProcess) {
