@@ -5,5 +5,7 @@ public class UserListMessage extends Message {
     public UserListMessage() {}
 
     @Override
-    public void process(String toProcess) {}
+    public String getType() {
+        return "UserListMessage";
+    }
 }
