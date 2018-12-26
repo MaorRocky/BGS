@@ -5,6 +5,7 @@ import bgu.spl.net.srv.messages.Message;
 import bgu.spl.net.srv.messages.RegisterMessage;
 
 public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMessagingProtocol<T> {
+    private InformationHolder information = InformationHolder.getInstance();
     private int connectionId;
     private Connections connections;
 
@@ -47,6 +48,7 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
 
 
     private void RegisterMessage(RegisterMessage message) {
+        start();
     }
 
     public int getConnectionId() {
