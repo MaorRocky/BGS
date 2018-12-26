@@ -5,5 +5,7 @@ public class LogoutMessage extends Message {
     public LogoutMessage(){}
 
     @Override
-    public void process(String s) {}
+    public String getType() {
+        return "LogoutMessage";
+    }
 }
