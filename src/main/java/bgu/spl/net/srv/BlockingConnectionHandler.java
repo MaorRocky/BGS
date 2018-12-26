@@ -17,13 +17,13 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private volatile boolean connected = true;
-    ConnectionsImpl<T> connections;
+    private int id;
 
-    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
+    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol, int id) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
-        //this.connections = connections;
+        this.id = id;
     }
 
     @Override
