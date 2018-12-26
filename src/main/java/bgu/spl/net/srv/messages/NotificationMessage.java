@@ -23,5 +23,4 @@ public class NotificationMessage extends Message {
         return content;
     }
 
-
 }
