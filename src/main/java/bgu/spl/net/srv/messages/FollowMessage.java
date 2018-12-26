@@ -26,7 +26,7 @@ public class FollowMessage extends Message {
         return numOfUsersToFollow;
     }
 
-    @Override
+
     public void process(String toProcess) {
         String nameToAdd = "";
         if (toProcess.charAt(0) == '0') {
@@ -46,5 +46,10 @@ public class FollowMessage extends Message {
             }
             index++;
         }
+    }
+
+    @Override
+    public String getType() {
+        return "FollowMessage";
     }
 }

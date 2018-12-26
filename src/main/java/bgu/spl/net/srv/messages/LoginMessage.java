@@ -28,4 +28,9 @@ public class LoginMessage extends Message {
             index++;
         }
     }
+
+    @Override
+    public String getType() {
+        return "LoginMessage";
+    }
 }

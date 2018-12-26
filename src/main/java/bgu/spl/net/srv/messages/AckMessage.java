@@ -9,11 +9,16 @@ public class AckMessage extends Message{
         this.optional = optional;
     }
 
-    public int getMessageOpcode() {
+    public short getMessageOpcode() {
         return messageOpcode;
     }
 
     public String getOptional() {
         return optional;
+    }
+
+    @Override
+    public String getType() {
+        return "AckMessage";
     }
 }

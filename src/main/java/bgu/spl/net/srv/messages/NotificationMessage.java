@@ -23,5 +23,8 @@ public class NotificationMessage extends Message {
         return content;
     }
 
-
+    @Override
+    public String getType() {
+        return "NotificationMessage";
+    }
 }

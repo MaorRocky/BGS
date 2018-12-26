@@ -11,8 +11,13 @@ public class StatMessage extends Message {
         return userToCheck;
     }
 
-    @Override
+
     public void process(String toProcess) {
         userToCheck = toProcess.substring(0, toProcess.length()-1);
+    }
+
+    @Override
+    public String getType() {
+        return "StatMessage";
     }
 }

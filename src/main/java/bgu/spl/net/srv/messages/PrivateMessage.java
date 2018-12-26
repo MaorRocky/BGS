@@ -18,7 +18,7 @@ public class PrivateMessage extends Message {
         return content;
     }
 
-    @Override
+
     public void process(String toProcess) {
         int index = 0;
         while (toProcess.charAt(index) != '\0') {
@@ -30,6 +30,10 @@ public class PrivateMessage extends Message {
             content = content + toProcess.charAt(index);
             index++;
         }
+    }
 
+    @Override
+    public String getType() {
+        return "PrivateMessage";
     }
 }

@@ -10,4 +10,9 @@ public class ErrorMessage extends Message {
     public short getOpcode() {
         return opcode;
     }
+
+    @Override
+    public String getType() {
+        return "ErrorMessage";
+    }
 }
