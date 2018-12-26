@@ -2,10 +2,9 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.bidi.*;
 import bgu.spl.net.srv.messages.Message;
+import bgu.spl.net.srv.messages.RegisterMessage;
 
-import java.io.UncheckedIOException;
-
-public class BidiMessagingProtocol implements bgu.spl.net.api.bidi.BidiMessagingProtocol {
+public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMessagingProtocol<T> {
     private int connectionId;
     private Connections connections;
 
@@ -47,7 +46,7 @@ public class BidiMessagingProtocol implements bgu.spl.net.api.bidi.BidiMessaging
     }
 
 
-    private void RegisterMessage() {
+    private void RegisterMessage(RegisterMessage message) {
     }
 
     public int getConnectionId() {
@@ -57,4 +56,5 @@ public class BidiMessagingProtocol implements bgu.spl.net.api.bidi.BidiMessaging
     public Connections getConnections() {
         return connections;
     }
+
 }
