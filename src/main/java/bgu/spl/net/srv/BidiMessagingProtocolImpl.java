@@ -1,8 +1,7 @@
 package bgu.spl.net.srv;
 
 import bgu.spl.net.api.bidi.*;
-import bgu.spl.net.srv.messages.Message;
-import bgu.spl.net.srv.messages.RegisterMessage;
+import bgu.spl.net.srv.messages.*;
 
 public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMessagingProtocol<T> {
     private InformationHolder information = InformationHolder.getInstance();
@@ -11,7 +10,7 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
 
 
     @Override
-    public void start(int connectionId, Connections connections) {
+        public void start(int connectionId, Connections connections) {
         this.connectionId = connectionId;
         this.connections = connections;
     }
@@ -22,8 +21,10 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
         String messageType = msg.getType();
         switch (messageType) {
             case "RegisterMessage":
+                RegisterMessage((RegisterMessage)msg);
                 break;
             case "LoginMessage":
+                LoginMessage((LoginMessage)msg);
                 break;
             case "LogoutMessage":
                 break;
@@ -48,7 +49,23 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
 
 
     private void RegisterMessage(RegisterMessage message) {
-        start();
+        this.start(message.getUserName().hashCode(), information.getConnections());
+        if (!information.isRegistered(connectionId)) {
+            information.registerClient(connectionId, message);
+            AckMessage ack = new AckMessage((short) 1, null);
+            connections.send(connectionId, ack);
+        }
+    }
+
+    private void LoginMessage(LoginMessage message) {
+        if (information.login(connectionId, message)) {
+            AckMessage ack = new AckMessage((short) 2, null);
+            connections.send(connectionId, ack);
+        }
+        else {
+            ErrorMessage error = new ErrorMessage((short) 2);
+            connections.send(connectionId, error);
+        }
     }
 
     public int getConnectionId() {

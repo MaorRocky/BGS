@@ -1,7 +1,10 @@
 package bgu.spl.net.srv;
 
 import bgu.spl.net.srv.bidi.ConnectionHandler;
+import bgu.spl.net.srv.messages.LoginMessage;
 import bgu.spl.net.srv.messages.Message;
+import bgu.spl.net.srv.messages.RegisterMessage;
+
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +15,7 @@ public class InformationHolder {
         private static InformationHolder instance = new InformationHolder();
     }
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Pair> clientToUserNameAndPassword = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Boolean> loggedinClients = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, LinkedList<Integer>> clientToFollowList = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, LinkedList<Integer>> clientToFollowers = new ConcurrentHashMap<>();
@@ -60,8 +64,9 @@ public class InformationHolder {
         }
     }
 
-    public boolean registerClient(Integer clientId, ConnectionHandler handler) {
-        if(connections.addClient(clientId, handler)) {
+    public boolean registerClient(Integer clientId, RegisterMessage message) {
+        if(!registeredClients.containsKey(clientId)) {
+            clientToUserNameAndPassword.put(clientId, new Pair(message.getUserName(), message.getPassword()));
             registeredClients.put(clientId, true);
             loggedinClients.put(clientId, false);
             clientToFollowList.put(clientId, new LinkedList<>());
@@ -74,14 +79,14 @@ public class InformationHolder {
         }
     }
 
-    public boolean login(Integer clientId) {
-        if(!isLoggedIn(clientId)) {
-            loggedinClients.replace(clientId, true);
-            return true;
+    public boolean login(Integer clientId, LoginMessage msg) {
+        if (checkUserNameAndPassword(clientId, msg.getUserName(), msg.getPassword())) {
+            if(!isLoggedIn(clientId)) {
+                loggedinClients.replace(clientId, true);
+                return true;
+            }
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     public void addFollower (Integer clientId, Integer clientToFollow) {
@@ -91,6 +96,11 @@ public class InformationHolder {
         if (!clientToFollowers.get(clientToFollow).contains(clientId)) {
             clientToFollowers.get(clientToFollow).addLast(clientId);
         }
+    }
+
+    private boolean checkUserNameAndPassword(Integer clientId, String userName, String password) {
+        return (clientToUserNameAndPassword.get(clientId).getFirst().equals(userName)) &
+                (clientToUserNameAndPassword.get(clientId).getSecond().equals(password));
     }
 
     public ConnectionsImpl getConnections() {
