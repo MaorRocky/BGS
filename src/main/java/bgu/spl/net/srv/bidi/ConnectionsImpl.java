@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
+
     private ConcurrentHashMap<Integer, ConnectionHandler<T>> clients;
 
     public ConnectionsImpl() {

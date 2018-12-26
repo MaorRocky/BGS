@@ -19,7 +19,7 @@ public class RegisterMessage extends Message {
         return password;
     }
 
-    @Override
+
     public void process(String toProcess) {
         int index = 0;
         while (toProcess.charAt(index) != '\0') { //creating the userName
@@ -31,5 +31,10 @@ public class RegisterMessage extends Message {
             password = password + toProcess.charAt(index);
             index++;
         }
+    }
+
+    @Override
+    public String getType() {
+        return "RegisterMessage";
     }
 }

@@ -35,9 +35,14 @@ public class PostMessage extends Message {
         }
     }
 
-    @Override
+
     public void process(String toProcess) {
         post = toProcess.substring(0, toProcess.length()-1);
         findTaggedUsers();
+    }
+
+    @Override
+    public String getType() {
+        return "PostMessage";
     }
 }
