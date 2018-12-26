@@ -56,7 +56,7 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
             connections.send(connectionId, ack);
         }
     }
-
+    /*TODO this is bad what if we will get loginMessage before we started the connections!!*/
     private void LoginMessage(LoginMessage message) {
         if (information.login(connectionId, message)) {
             AckMessage ack = new AckMessage((short) 2, null);
