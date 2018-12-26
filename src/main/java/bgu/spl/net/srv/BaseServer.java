@@ -25,7 +25,6 @@ public abstract class BaseServer<T> implements Server<T> {
         this.protocolFactory = protocolFactory;
         this.encdecFactory = encdecFactory;
 		this.sock = null;
-		idCounter = 0;
     }
 
     @Override
@@ -41,13 +40,13 @@ public abstract class BaseServer<T> implements Server<T> {
                 Socket clientSock = serverSock.accept();
 
                 BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(clientSock,
-                        encdecFactory.get(), protocolFactory.get(), idCounter);
+                        encdecFactory.get(), protocolFactory.get());
+
 
                 execute(handler);
             }
         } catch (IOException ex) {
         }
-
         System.out.println("server closed!!!");
     }
 
