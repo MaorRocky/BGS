@@ -133,7 +133,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             copyFromTo(toReturn, messageOpcode, opcode.length);
             copyFromTo(toReturn, numOfUsers, opcode.length + messageOpcode.length);
             copyFromTo(toReturn, userNameListString, opcode.length + messageOpcode.length + numOfUsers.length);
-            toReturn[toReturn.length - 1] = '\0';
+
 
         } else if (message instanceof AckStatMessage) {
             byte Opcode[] = shortToBytes((short) 10);
