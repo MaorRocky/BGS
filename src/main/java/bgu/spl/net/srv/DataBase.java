@@ -23,13 +23,13 @@ public class DataBase {
      *  loggedinClients this Hashmap links to each User - ClientID a boolean value which detriments
      *  if the user is logged in  or not .
      *
-     *  clientToFollowList this Hashmap links to each User - userName(String) a linkedList<String> which will
+     *  clientToFollowList this Hashmap links to each User - userName(String) to a linkedList<String> which will
      *  include all of the users which the User is following .
      *
-     *  clientToFollowers this Hashmap links to each User - userName(String) a linkedList<String> which will
+     *  clientToFollowers this Hashmap links to each User - userName(String) to  a linkedList<String> which will
      *  include all of the users which follows the user.
      *
-     *  clientToPostList  this Hashmap links to each User - userName(String) a linkedList<String> which will
+     *  clientToPostList  this Hashmap links to each User - userName(String)to  a linkedList<String> which will
      *  include all the posts which the user posted*/
 
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
@@ -40,7 +40,6 @@ public class DataBase {
     private ConcurrentHashMap<Integer, LinkedList<String>> clientToPostList = new ConcurrentHashMap<>();
 
 
-
     public static DataBase getInstance() {
         return SingletonHolder.instance;
     }
@@ -48,8 +47,7 @@ public class DataBase {
     public boolean isRegistered(Integer clientId) {
         if (registeredClients.containsKey(clientId)) {
             return registeredClients.get(clientId);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -57,8 +55,7 @@ public class DataBase {
     public boolean isLoggedIn(Integer clientId) {
         if (loggedinClients.containsKey(clientId)) {
             return loggedinClients.get(clientId);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -66,8 +63,7 @@ public class DataBase {
     public LinkedList<String> getClientFollowList(Integer clientId) {
         if (clientToFollowList.containsKey(clientId)) {
             return clientToFollowList.get(clientId);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -75,14 +71,13 @@ public class DataBase {
     public LinkedList<String> getClientsPostList(Integer clientId) {
         if (clientToPostList.containsKey(clientId)) {
             return clientToPostList.get(clientId);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     public boolean registerClient(Integer clientId, RegisterMessage message) {
-        if(!registeredClients.containsKey(clientId)) {
+        if (!registeredClients.containsKey(clientId)) {
             clientToUserNameAndPassword.put(clientId, new Pair<String, String>(message.getUserName(), message.getPassword()));
             registeredClients.put(clientId, true);
             loggedinClients.put(clientId, false);
@@ -90,15 +85,14 @@ public class DataBase {
             clientToFollowers.put(message.getUserName(), new LinkedList<>());
             clientToPostList.put(clientId, new LinkedList<>());
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
     public boolean login(Integer clientId, LoginMessage msg) {
         if (checkUserNameAndPassword(clientId, msg.getUserName(), msg.getPassword())) {
-            if(!isLoggedIn(clientId)) {
+            if (!isLoggedIn(clientId)) {
                 loggedinClients.replace(clientId, true);
                 return true;
             }
@@ -106,7 +100,10 @@ public class DataBase {
         return false;
     }
 
-    public void addFollower (String clientName, String clientToFollow) {
+    /*we add clientToFollow to the clientName followList
+     * we add clientName to clientToFollow followersList */
+
+    public void addFollower(String clientName, String clientToFollow) {
         if (!clientToFollowList.get(clientName).contains(clientToFollow)) {
             clientToFollowList.get(clientName).addLast(clientToFollow);
         }
@@ -117,8 +114,19 @@ public class DataBase {
         }
     }
 
+
+    /*We will remove clientToUnfollow from clientName following list, which means clientName will stop
+     * following clientToUnfollow
+     * we will remove clientName from clientToUnfollow followers lise because clientName stopped
+     * following him*/
     public void removeFollower(String clientName, String clientToUnfollow) {
-        if
+        if (clientToFollowList.get(clientName).contains(clientToUnfollow)) {
+            clientToFollowList.get(clientName).remove(clientToUnfollow);
+        }
+        if (clientToFollowers.get(clientToUnfollow).contains(clientName)) {
+            clientToFollowList.get(clientToUnfollow).remove(clientName);
+        }
+
     }
 
     private boolean checkUserNameAndPassword(Integer clientId, String userName, String password) {
@@ -126,7 +134,7 @@ public class DataBase {
                 (clientToUserNameAndPassword.get(clientId).getSecond().equals(password));
     }
 
-    public void logOut(int clientID){
+    public void logOut(int clientID) {
         loggedinClients.replace(clientID, false);
     }
 
