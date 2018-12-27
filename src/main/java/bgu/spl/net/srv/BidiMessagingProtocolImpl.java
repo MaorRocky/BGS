@@ -5,7 +5,7 @@ import bgu.spl.net.srv.messages.*;
 
 import java.util.List;
 
-public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMessagingProtocol<T> {
+public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<T> {
     private InformationHolder information = InformationHolder.getInstance();
     private int connectionId;
     private Connections connections;
@@ -80,11 +80,10 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
     }
 
     private void FollowMessage(FollowMessage message) {
-        if (information.isLoggedIn(connectionId)){
+        if (information.isLoggedIn(connectionId)) {
             List<String> list = message.getUsersToFollow();
 
-        }
-        else {
+        } else {
             ErrorMessage error = new ErrorMessage((short) 2);
             connections.send(connectionId, error);
         }
