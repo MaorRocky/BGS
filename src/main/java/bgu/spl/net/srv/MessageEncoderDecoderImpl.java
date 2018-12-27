@@ -3,8 +3,9 @@ package bgu.spl.net.srv;
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.srv.messages.*;
 
+
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+
 
 public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message> {
     private byte[] bytes = new byte[1 << 10];
@@ -132,9 +133,38 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             copyFromTo(toReturn, messageOpcode, opcode.length);
             copyFromTo(toReturn, numOfUsers, opcode.length + messageOpcode.length);
             copyFromTo(toReturn, userNameListString, opcode.length + messageOpcode.length + numOfUsers.length);
-            toReturn[toReturn.length - 1] = '\0';
 
+
+        } else if (message instanceof AckStatMessage) {
+            byte Opcode[] = shortToBytes((short) 10);
+            byte messageOpcode[] = shortToBytes((short) 8);
+            byte[] NumPosts = shortToBytes(((AckStatMessage) message).getNumOfPosts());
+            byte[] NumFollowers = shortToBytes(((AckStatMessage) message).getNumOfFollowers());
+            byte[] NumFollowing = shortToBytes(((AckStatMessage) message).getNumOfFollowing());
+            toReturn = new byte[Opcode.length + messageOpcode.length + NumPosts.length
+                    + NumFollowers.length + NumFollowing.length];
+            copyFromTo(toReturn, Opcode, 0);
+            copyFromTo(toReturn, messageOpcode, Opcode.length);
+            copyFromTo(toReturn, NumPosts, Opcode.length + messageOpcode.length);
+            copyFromTo(toReturn, NumFollowers, Opcode.length + messageOpcode.length + NumPosts.length);
+            copyFromTo(toReturn, NumFollowing, Opcode.length + messageOpcode.length + NumFollowers.length + NumFollowing.length);
+
+        } else if (message instanceof AckUserListMessage) {
+            byte[] Opcode = shortToBytes((short) 10);
+            byte[] messageOpcode = shortToBytes((short) 7);
+            byte[] NumOfUsers = shortToBytes(((AckUserListMessage) message).getNumOfUsers());
+            String UserNameListString = "";
+            for (String UserName : ((AckUserListMessage) message).getUserList()) {
+                UserNameListString += UserName + '\0';
+            }
+            byte[] UserNameListByteArray = UserNameListString.getBytes();
+            toReturn = new byte[Opcode.length + messageOpcode.length + NumOfUsers.length + UserNameListByteArray.length];
+            copyFromTo(toReturn, Opcode, 0);
+            copyFromTo(toReturn, messageOpcode, Opcode.length);
+            copyFromTo(toReturn, NumOfUsers, Opcode.length + messageOpcode.length);
+            copyFromTo(toReturn, UserNameListByteArray, Opcode.length + messageOpcode.length + NumOfUsers.length);
         }
+
         // "normal" Ackmessage
         else if (message instanceof AckMessage) {
             short s = 10;
