@@ -46,6 +46,7 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
     }
 
     @Override
+    /*TODO we need to implement this method*/
     public boolean shouldTerminate() {
         return false;
     }
