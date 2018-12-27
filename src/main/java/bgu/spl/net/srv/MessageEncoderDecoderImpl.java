@@ -94,6 +94,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     public byte[] encode(Message message) {
 
         byte[] toReturn;
+        // Notification message
         if (message instanceof NotificationMessage) {
             char type;
             if (((NotificationMessage) message).isPrivate()) {
@@ -121,7 +122,9 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             }
             toReturn[toReturn.length - 1] = '\0';
 
-        } else if (message instanceof AckFollowMessage) {
+        }
+        // AckMessage for follow/unfollow
+        else if (message instanceof AckFollowMessage) {
             byte[] opcode = shortToBytes((short) 10);
             byte[] messageOpcode = shortToBytes((short) 4);
             byte[] numOfUsers = shortToBytes(((AckFollowMessage) message).getNumOfUsers());
@@ -145,8 +148,9 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             }
             toReturn[toReturn.length - 1] = '\0';
 
-
-        } else if (message instanceof AckMessage) {
+        }
+        // "normal" Ackmessage
+        else if (message instanceof AckMessage) {
             short s = 10;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
@@ -162,7 +166,10 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 toReturn[opcode.length + messageOpcode.length + k] = optional[k];
             }
             toReturn[toReturn.length - 1] = '\0';
-        } else {
+
+        }
+        // Error message
+        else {
             short s = 11;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((ErrorMessage) message).getOpcode());
