@@ -9,9 +9,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     private DataBase dataBase = DataBase.getInstance();
     private int connectionId;
     private Connections connections;
-
-
-
+    private String userName;
+    private String password;
 
     @Override
     public void start(int connectionId, Connections connections) {
@@ -56,6 +55,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     private void RegisterMessage(RegisterMessage message) {
         if (!dataBase.isRegistered(connectionId)) {
             dataBase.registerClient(connectionId, message);
+            userName = message.getUserName();
+            password = message.getPassword();
             AckMessage ack = new AckMessage((short) 1, null);
             connections.send(connectionId, ack);
         }
@@ -89,8 +90,13 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     private void FollowMessage(FollowMessage message) {
         if (dataBase.isLoggedIn(connectionId)){
-            List<String> list = message.getUsersToFollow();
+            List<String> usersToFollow = message.getUsersToFollow();
             if (message.isFollow()) {
+                for (String user: usersToFollow) {
+                    dataBase.addFollower(userName, user);
+                }
+            }
+            else {
 
             }
 

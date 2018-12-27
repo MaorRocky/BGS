@@ -13,7 +13,7 @@ public class DataBase {
     }
 
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, Pair> clientToUserNameAndPassword = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Boolean> loggedinClients = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers = new ConcurrentHashMap<>();
@@ -43,7 +43,7 @@ public class DataBase {
         }
     }
 
-    public LinkedList<Integer> getClientFollowList(Integer clientId) {
+    public LinkedList<String> getClientFollowList(Integer clientId) {
         if (clientToFollowList.containsKey(clientId)) {
             return clientToFollowList.get(clientId);
         }
@@ -63,11 +63,11 @@ public class DataBase {
 
     public boolean registerClient(Integer clientId, RegisterMessage message) {
         if(!registeredClients.containsKey(clientId)) {
-            clientToUserNameAndPassword.put(clientId, new Pair(message.getUserName(), message.getPassword()));
+            clientToUserNameAndPassword.put(clientId, new Pair<String, String>(message.getUserName(), message.getPassword()));
             registeredClients.put(clientId, true);
             loggedinClients.put(clientId, false);
-            clientToFollowList.put(clientId, new LinkedList<>());
-            clientToFollowers.put(clientId, new LinkedList<>());
+            clientToFollowList.put(message.getUserName(), new LinkedList<>());
+            clientToFollowers.put(message.getUserName(), new LinkedList<>());
             clientToPostList.put(clientId, new LinkedList<>());
             return true;
         }
@@ -86,13 +86,19 @@ public class DataBase {
         return false;
     }
 
-    public void addFollower (Integer clientId, Integer clientToFollow) {
-        if (!clientToFollowList.get(clientId).contains(clientToFollow)) {
-            clientToFollowList.get(clientId).addLast(clientToFollow);
+    public void addFollower (String clientName, String clientToFollow) {
+        if (!clientToFollowList.get(clientName).contains(clientToFollow)) {
+            clientToFollowList.get(clientName).addLast(clientToFollow);
         }
-        if (!clientToFollowers.get(clientToFollow).contains(clientId)) {
-            clientToFollowers.get(clientToFollow).addLast(clientId);
+        if (clientToFollowers.containsKey(clientToFollow)) {
+            if (!clientToFollowers.get(clientToFollow).contains(clientName)) {
+                clientToFollowers.get(clientToFollow).addLast(clientName);
+            }
         }
+    }
+
+    public void removeFollower(String clientName, String clientToUnfollow) {
+        if
     }
 
     private boolean checkUserNameAndPassword(Integer clientId, String userName, String password) {

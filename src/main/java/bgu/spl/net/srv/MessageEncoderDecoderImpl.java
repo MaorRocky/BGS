@@ -125,6 +125,19 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             toReturn[toReturn.length-1] = '\0';
         }
 
+        else if (message instanceof AckFollowMessage) {
+            byte[] opcode = shortToBytes((short)10);
+            byte[] followOpcode = shortToBytes((short) 4);
+            byte[] numOfUsers = shortToBytes(((AckFollowMessage) message).getNumOfUsers());
+            String namesString = "";
+            for (String name: ((AckFollowMessage) message).getUsers()) {
+                namesString += name + '\0' ;
+            }
+            byte[] users = namesString.getBytes();
+            toReturn = new byte[opcode.length + followOpcode.length + numOfUsers.length + users.length];
+
+        }
+
         else if (message instanceof AckMessage) {
             short s = 10;
             byte[] opcode = shortToBytes(s);
