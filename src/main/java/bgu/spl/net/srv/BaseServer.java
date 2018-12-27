@@ -15,6 +15,7 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
+    private ConnectionsImpl<T> connections = new ConnectionsImpl<>();
 
     public BaseServer(
             int port,
@@ -25,6 +26,7 @@ public abstract class BaseServer<T> implements Server<T> {
         this.protocolFactory = protocolFactory;
         this.encdecFactory = encdecFactory;
 		this.sock = null;
+		idCounter = 0;
     }
 
     @Override
@@ -39,8 +41,16 @@ public abstract class BaseServer<T> implements Server<T> {
 
                 Socket clientSock = serverSock.accept();
 
+                BidiMessagingProtocol<T> protocol = protocolFactory.get();
+
+                protocol.start(idCounter, connections);
+
                 BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<>(clientSock,
-                        encdecFactory.get(), protocolFactory.get());
+                        encdecFactory.get(), protocol);
+
+                connections.addClient(idCounter, handler);
+
+                idCounter++;
 
 
                 execute(handler);

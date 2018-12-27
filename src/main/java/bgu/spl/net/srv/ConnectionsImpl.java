@@ -7,25 +7,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
 
-    private ConcurrentHashMap<Integer, ConnectionHandler<T>> clients;
-    private InformationHolder information;
+    private ConcurrentHashMap<Integer, bgu.spl.net.srv.bidi.ConnectionHandler<T>> clients;
+    private DataBase information;
 
     public ConnectionsImpl() {
         clients = new ConcurrentHashMap<>();
-        information = InformationHolder.getInstance();
+        information = DataBase.getInstance();
     }
 
     public boolean send(int connectionId, T msg) {
         if (clients.containsKey(connectionId)) {
             clients.get(connectionId).send(msg);
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
-    public void broadcast(T msg) {
-        for (Integer id : clients.keySet()) {
+    public void broadcast (T msg) {
+        for (Integer id: clients.keySet()) {
             clients.get(id).send(msg);
         }
     }
@@ -40,7 +41,8 @@ public class ConnectionsImpl<T> implements Connections<T> {
         if (!clients.containsKey(clientId)) {
             clients.put(clientId, handler);
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
