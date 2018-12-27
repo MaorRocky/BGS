@@ -39,7 +39,6 @@ public class DataBase {
      *  */
 
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, Boolean> registeredClientsByName = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Boolean> loggedinClients = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList = new ConcurrentHashMap<>();
@@ -61,15 +60,6 @@ public class DataBase {
         }
     }
 
-    public boolean isRegisteredByName(String userName) {
-        if (registeredClientsByName.containsKey(userName)) {
-            return registeredClientsByName.get(userName);
-        }
-        else {
-            return false;
-        }
-    }
-
     public boolean isLoggedIn(Integer clientId) {
         if (loggedinClients.containsKey(clientId)) {
             return loggedinClients.get(clientId);
@@ -78,9 +68,9 @@ public class DataBase {
         }
     }
 
-    public LinkedList<String> getClientFollowList(Integer clientId) {
-        if (clientToFollowList.containsKey(clientId)) {
-            return clientToFollowList.get(clientId);
+    public LinkedList<String> getClientFollowList(String clientName) {
+        if (clientToFollowList.containsKey(clientName)) {
+            return clientToFollowList.get(clientName);
         } else {
             return null;
         }
@@ -103,7 +93,6 @@ public class DataBase {
             clientToFollowers.put(message.getUserName(), new LinkedList<>());
             clientToPostList.put(clientId, new LinkedList<>());
             clientNameToClientId.put(message.getUserName(), clientId);
-            registeredClientsByName.put(message.getUserName(), true);
             clientToPrivateMessageList.put(clientId, new LinkedList<>());
             userNamesList.add(message.getUserName());
             return true;
@@ -192,9 +181,9 @@ public class DataBase {
         return userNamesList;
     }
 
-    public LinkedList<String> getClientFollowersList(String userName) {
-        if (clientToFollowers.containsKey(userName)) {
-            return clientToFollowers.get(userName);
+    public LinkedList<String> getClientFollowersList(String clientName) {
+        if (clientToFollowers.containsKey(clientName)) {
+            return clientToFollowers.get(clientName);
         }
         else {
             return null;

@@ -105,7 +105,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             }
             else {
                 for (String unfollowUser:message.getUsersToFollow()) {
-                    String temp =   dataBase.removeFollower(userName,unfollowUser);
+                    String temp = dataBase.removeFollower(userName,unfollowUser);
                     if (!temp.equals(""))
                         addedOrRemovedFollowers.add(temp);
                 }
@@ -121,15 +121,13 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     }
 
     private void processPostMessage(PostMessage message){
-        if ( dataBase.isLoggedIn(connectionId)) {
+        if (dataBase.isLoggedIn(connectionId)) {
             for (String taggedUser:message.getTaggedUsers()) {
-                if (dataBase.isRegisteredByName(taggedUser)) {
+                if (dataBase.isRegistered(dataBase.getIdFromUserName(taggedUser))) {
                     NotificationMessage notificationMessage = new NotificationMessage(
                             false,userName,message.getPost());
                     int temp = dataBase.getIdFromUserName(taggedUser);
-                    if (temp!=-1){
-                        connections.send(temp,notificationMessage);
-                    }
+                    connections.send(temp,notificationMessage);
                 }
             }
             dataBase.addPost(connectionId, message);
@@ -141,7 +139,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     }
 
     private void processPrivateMessage(PrivateMessage message) {
-        if (dataBase.isLoggedIn(connectionId) && dataBase.isRegisteredByName(message.getReceiverUser())) {
+        if (dataBase.isLoggedIn(connectionId) && dataBase.isRegistered(dataBase.getIdFromUserName(message.getReceiverUser()))) {
             NotificationMessage notificationMessage = new NotificationMessage(true, userName, message.getContent());
             dataBase.addPrivateMessage(connectionId, message);
             connections.send(dataBase.getIdFromUserName(message.getReceiverUser()), notificationMessage);
@@ -163,12 +161,16 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     }
 
     private void processStatMessage(StatMessage message) {
-        if(dataBase.isLoggedIn(connectionId) && dataBase.isRegisteredByName(message.getuserToCheck())) {
+        if(dataBase.isLoggedIn(connectionId) && dataBase.isRegistered(dataBase.getIdFromUserName(message.getuserToCheck()))) {
             int idToCheck = dataBase.getIdFromUserName(message.getuserToCheck());
             short numOfPosts = (short) dataBase.getClientsPostList(idToCheck).size();
-            if (dataBase.getClientFollowersList(message.getuserToCheck()) != null) {
-
-            }
+            short numOfFollowers = (short) dataBase.getClientFollowersList(message.getuserToCheck()).size();
+            short numOfFollowing = (short) dataBase.getClientFollowList(message.getuserToCheck()).size();
+            AckStatMessage toSend = new AckStatMessage(numOfPosts, numOfFollowers, numOfFollowing);
+            connections.send(connectionId, toSend);
+        }
+        else {
+            connections.send(connectionId, new ErrorMessage((short) 8));
         }
     }
 
