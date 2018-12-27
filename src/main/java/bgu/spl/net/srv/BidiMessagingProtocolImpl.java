@@ -5,10 +5,12 @@ import bgu.spl.net.srv.messages.*;
 
 import java.util.List;
 
-public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMessagingProtocol<T> {
-    private InformationHolder information = InformationHolder.getInstance();
+public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
+    private DataBase dataBase = DataBase.getInstance();
     private int connectionId;
     private Connections connections;
+
+
 
 
     @Override
@@ -18,8 +20,8 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
     }
 
     @Override
-    public void process(Object message) {
-        Message msg = (Message) message;
+    public void process(Message message) {
+        Message msg = message;
         String messageType = msg.getType();
         switch (messageType) {
             case "RegisterMessage":
@@ -52,16 +54,19 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
 
 
     private void RegisterMessage(RegisterMessage message) {
-        this.start(message.getUserName().hashCode(), information.getConnections());
-        if (!information.isRegistered(connectionId)) {
-            information.registerClient(connectionId, message);
+        if (!dataBase.isRegistered(connectionId)) {
+            dataBase.registerClient(connectionId, message);
             AckMessage ack = new AckMessage((short) 1, null);
             connections.send(connectionId, ack);
+        }
+        else {
+            ErrorMessage error = new ErrorMessage((short) 1);
+            connections.send(connectionId,error);
         }
     }
 
     private void LoginMessage(LoginMessage message) {
-        if (information.login(connectionId, message)) {
+        if (dataBase.login(connectionId, message)) { // checks userName, password and if the client is already logged in
             AckMessage ack = new AckMessage((short) 2, null);
             connections.send(connectionId, ack);
         } else {
@@ -71,16 +76,23 @@ public class BidiMessagingProtocolImpl<T> implements bgu.spl.net.api.bidi.BidiMe
     }
 
     private void LogoutMessage() {
-        if (information.isLoggedIn(connectionId)) {
-            information.logOut(connectionId);
+        if (dataBase.isLoggedIn(connectionId)) {
+            dataBase.logOut(connectionId);
             AckMessage ack = new AckMessage((short) 3, null);
             connections.send(connectionId, ack);
+        }
+        else {
+            ErrorMessage error = new ErrorMessage((short) 3);
+            connections.send(connectionId, error);
         }
     }
 
     private void FollowMessage(FollowMessage message) {
-        if (information.isLoggedIn(connectionId)){
+        if (dataBase.isLoggedIn(connectionId)){
             List<String> list = message.getUsersToFollow();
+            if (message.isFollow()) {
+
+            }
 
         }
         else {

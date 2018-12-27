@@ -3,17 +3,16 @@ package bgu.spl.net.srv;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.bidi.ConnectionHandler;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
 
-    private ConcurrentHashMap<Integer, ConnectionHandler<T>> clients;
-    private InformationHolder information;
+    private ConcurrentHashMap<Integer, bgu.spl.net.srv.bidi.ConnectionHandler<T>> clients;
+    private DataBase information;
 
     public ConnectionsImpl() {
         clients = new ConcurrentHashMap<>();
-        information = InformationHolder.getInstance();
+        information = DataBase.getInstance();
     }
 
     public boolean send(int connectionId, T msg) {
