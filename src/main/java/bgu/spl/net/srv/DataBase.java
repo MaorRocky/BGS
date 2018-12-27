@@ -30,7 +30,11 @@ public class DataBase {
      *  include all of the users which follows the user.
      *
      *  clientToPostList  this Hashmap links to each User - userName(String)to  a linkedList<String> which will
-     *  include all the posts which the user posted*/
+     *  include all the posts which the user posted
+     *
+     *  clientNameToClientId this Hashmap links to each User - ClientName(String) a Int value which is
+     *  the specific clientID.
+     *  */
 
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword = new ConcurrentHashMap<>();
@@ -38,7 +42,7 @@ public class DataBase {
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, LinkedList<String>> clientToPostList = new ConcurrentHashMap<>();
-
+    private ConcurrentHashMap<String, Integer> clientNameToClientId = new ConcurrentHashMap<>();
 
     public static DataBase getInstance() {
         return SingletonHolder.instance;
@@ -78,12 +82,13 @@ public class DataBase {
 
     public boolean registerClient(Integer clientId, RegisterMessage message) {
         if (!registeredClients.containsKey(clientId)) {
-            clientToUserNameAndPassword.put(clientId, new Pair<String, String>(message.getUserName(), message.getPassword()));
+            clientToUserNameAndPassword.put(clientId, new Pair<>(message.getUserName(), message.getPassword()));
             registeredClients.put(clientId, true);
             loggedinClients.put(clientId, false);
             clientToFollowList.put(message.getUserName(), new LinkedList<>());
             clientToFollowers.put(message.getUserName(), new LinkedList<>());
             clientToPostList.put(clientId, new LinkedList<>());
+            clientNameToClientId.put(message.getUserName(), clientId);
             return true;
         } else {
             return false;
@@ -145,4 +150,10 @@ public class DataBase {
         loggedinClients.replace(clientID, false);
     }
 
+
+    public int getIdFromUserName(String userName){
+        if (clientNameToClientId.containsKey(userName))
+            return clientNameToClientId.get(userName);
+        else return -1;
+    }
 }

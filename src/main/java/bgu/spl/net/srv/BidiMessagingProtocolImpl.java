@@ -21,19 +21,19 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     @Override
     public void process(Message message) {
-        Message msg = message;
-        String messageType = msg.getType();
+        String messageType = message.getType();
         switch (messageType) {
             case "RegisterMessage":
-                RegisterMessage((RegisterMessage) msg);
+                RegisterMessage((RegisterMessage) message);
                 break;
             case "LoginMessage":
-                LoginMessage((LoginMessage) msg);
+                LoginMessage((LoginMessage) message);
                 break;
             case "LogoutMessage":
                 LogoutMessage();
                 break;
             case "FollowMessage":
+                FollowMessage((FollowMessage)message);
                 break;
             case "PostMessage":
                 break;
@@ -114,6 +114,17 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         else {
             ErrorMessage error = new ErrorMessage((short) 4);
             connections.send(connectionId, error);
+        }
+    }
+
+    private void PostMessage(PostMessage message){
+        for (String taggedUser:message.getTaggedUsers()) {
+            NotificationMessage notificationMessage = new NotificationMessage(
+                    false,userName,message.getPost());
+            int temp = dataBase.getIdFromUserName(taggedUser);
+            if (temp!=-1){
+                connections.send(temp,notificationMessage);
+            }
         }
     }
 

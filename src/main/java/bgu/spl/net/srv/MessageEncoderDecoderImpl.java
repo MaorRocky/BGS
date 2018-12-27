@@ -121,30 +121,29 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             }
             toReturn[toReturn.length - 1] = '\0';
 
-/*TODO change it*/
         } else if (message instanceof AckFollowMessage) {
             byte[] opcode = shortToBytes((short) 10);
-            byte[] followOpcode = shortToBytes((short) 4);
+            byte[] messageOpcode = shortToBytes((short) 4);
             byte[] numOfUsers = shortToBytes(((AckFollowMessage) message).getNumOfUsers());
             String namesString = "";
             for (String name : ((AckFollowMessage) message).getUsers()) {
                 namesString += name + '\0';
             }
             byte[] userNameListString = namesString.getBytes();
-            toReturn = new byte[opcode.length + followOpcode.length + numOfUsers.length + userNameListString.length];
+            toReturn = new byte[opcode.length + messageOpcode.length + numOfUsers.length + userNameListString.length];
             for (int i = 0; i < opcode.length; i++) {
                 toReturn[i] = opcode[i];
             }
-            for (int i = 0; i < followOpcode.length; i++) {
-                toReturn[i] = followOpcode[i];
+            for (int i = 0; i < messageOpcode.length; i++) {
+                toReturn[i + opcode.length] = messageOpcode[i];
             }
             for (int i = 0; i < numOfUsers.length; i++) {
-                toReturn[i] = numOfUsers[i];
+                toReturn[i + opcode.length + messageOpcode.length] = numOfUsers[i];
             }
             for (int i = 0; i < userNameListString.length; i++) {
-                toReturn[i] = userNameListString[i];
+                toReturn[i + opcode.length + messageOpcode.length + numOfUsers.length] = userNameListString[i];
             }
-            toReturn[toReturn.length-1] = '\0';
+            toReturn[toReturn.length - 1] = '\0';
 
 
         } else if (message instanceof AckMessage) {
