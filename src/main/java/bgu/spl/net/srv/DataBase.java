@@ -1,30 +1,27 @@
 package bgu.spl.net.srv;
 
-import bgu.spl.net.srv.bidi.ConnectionHandler;
 import bgu.spl.net.srv.messages.LoginMessage;
-import bgu.spl.net.srv.messages.Message;
 import bgu.spl.net.srv.messages.RegisterMessage;
 
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InformationHolder {
+public class DataBase {
     private static class SingletonHolder {
-        private static InformationHolder instance = new InformationHolder();
+        private static DataBase instance = new DataBase();
     }
+
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Pair> clientToUserNameAndPassword = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Boolean> loggedinClients = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, LinkedList<Integer>> clientToFollowList = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, LinkedList<Integer>> clientToFollowers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, LinkedList<String>> clientToPostList = new ConcurrentHashMap<>();
-    private ConnectionsImpl<Message> connections = new ConnectionsImpl<>();
 
 
 
-    public static InformationHolder getInstance() {
+    public static DataBase getInstance() {
         return SingletonHolder.instance;
     }
 
@@ -103,15 +100,8 @@ public class InformationHolder {
                 (clientToUserNameAndPassword.get(clientId).getSecond().equals(password));
     }
 
-    public ConnectionsImpl getConnections() {
-        return connections;
-    }
-
-
-
     public void logOut(int clientID){
-            loggedinClients.remove(clientID);
-
+        loggedinClients.replace(clientID, false);
     }
 
 }
