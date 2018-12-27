@@ -134,8 +134,10 @@ public class DataBase {
             clientToFollowList.get(clientName).remove(clientToUnfollow);
             removedFollower = clientToUnfollow;
         }
-        if (clientToFollowers.get(clientToUnfollow).contains(clientName)) {
-            clientToFollowList.get(clientToUnfollow).remove(clientName);
+        if (clientToFollowers.containsKey(clientToUnfollow)) {
+            if (clientToFollowers.get(clientToUnfollow).contains(clientName)) {
+                clientToFollowers.get(clientToUnfollow).remove(clientName);
+            }
         }
         return removedFollower;
 
@@ -151,7 +153,7 @@ public class DataBase {
     }
 
 
-    public int getIdFromUserName(String userName){
+    public int getIdFromUserName(String userName) {
         if (clientNameToClientId.containsKey(userName))
             return clientNameToClientId.get(userName);
         else return -1;
