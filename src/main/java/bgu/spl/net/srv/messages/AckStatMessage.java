@@ -5,7 +5,7 @@ public class AckStatMessage extends AckMessage {
     private short numOfFollowers;
     private short numOfFollowing;
 
-    public AckStatMessage(short numOfPosts, short numOfFollowers, short numOfFollowing) {
+    public AckStatMessage( short numOfPosts, short numOfFollowers, short numOfFollowing) {
         this.numOfPosts = numOfPosts;
         this.numOfFollowers = numOfFollowers;
         this.numOfFollowing = numOfFollowing;
