@@ -1,19 +1,19 @@
 package bgu.spl.net.srv;
 
-public class Pair {
-    private String first;
-    private String second;
+public class Pair <K, V> {
+    private K first;
+    private V second;
 
-    public Pair(String first, String second) {
+    public Pair(K first, V second) {
         this.first = first;
         this.second = second;
     }
 
-    public String getFirst() {
+    public K getFirst() {
         return first;
     }
 
-    public String getSecond() {
+    public V getSecond() {
         return second;
     }
 }
