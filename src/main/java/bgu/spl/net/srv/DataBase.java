@@ -1,6 +1,8 @@
 package bgu.spl.net.srv;
 
 import bgu.spl.net.srv.messages.LoginMessage;
+import bgu.spl.net.srv.messages.PostMessage;
+import bgu.spl.net.srv.messages.PrivateMessage;
 import bgu.spl.net.srv.messages.RegisterMessage;
 
 
@@ -37,12 +39,15 @@ public class DataBase {
      *  */
 
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Boolean> registeredClientsByName = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Boolean> loggedinClients = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, LinkedList<String>> clientToPostList = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, LinkedList<PostMessage>> clientToPostList = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Integer> clientNameToClientId = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, LinkedList<PrivateMessage>> clientToPrivateMessageList = new ConcurrentHashMap<>();
+    private LinkedList<String> userNamesList = new LinkedList<>();
 
     public static DataBase getInstance() {
         return SingletonHolder.instance;
@@ -52,6 +57,15 @@ public class DataBase {
         if (registeredClients.containsKey(clientId)) {
             return registeredClients.get(clientId);
         } else {
+            return false;
+        }
+    }
+
+    public boolean isRegisteredByName(String userName) {
+        if (registeredClientsByName.containsKey(userName)) {
+            return registeredClientsByName.get(userName);
+        }
+        else {
             return false;
         }
     }
@@ -72,7 +86,7 @@ public class DataBase {
         }
     }
 
-    public LinkedList<String> getClientsPostList(Integer clientId) {
+    public LinkedList<PostMessage> getClientsPostList(Integer clientId) {
         if (clientToPostList.containsKey(clientId)) {
             return clientToPostList.get(clientId);
         } else {
@@ -89,6 +103,9 @@ public class DataBase {
             clientToFollowers.put(message.getUserName(), new LinkedList<>());
             clientToPostList.put(clientId, new LinkedList<>());
             clientNameToClientId.put(message.getUserName(), clientId);
+            registeredClientsByName.put(message.getUserName(), true);
+            clientToPrivateMessageList.put(clientId, new LinkedList<>());
+            userNamesList.add(message.getUserName());
             return true;
         } else {
             return false;
@@ -157,5 +174,30 @@ public class DataBase {
         if (clientNameToClientId.containsKey(userName))
             return clientNameToClientId.get(userName);
         else return -1;
+    }
+
+    public void addPost(Integer clientId, PostMessage post) {
+        if (clientToPostList.containsKey(clientId)) {
+            clientToPostList.get(clientId).add(post);
+        }
+    }
+
+    public void addPrivateMessage(Integer clientId, PrivateMessage privateMessage) {
+        if (clientToPrivateMessageList.containsKey(clientId)) {
+            clientToPrivateMessageList.get(clientId).add(privateMessage);
+        }
+    }
+
+    public LinkedList<String> getUserNamesList() {
+        return userNamesList;
+    }
+
+    public LinkedList<String> getClientFollowersList(String userName) {
+        if (clientToFollowers.containsKey(userName)) {
+            return clientToFollowers.get(userName);
+        }
+        else {
+            return null;
+        }
     }
 }

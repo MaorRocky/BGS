@@ -24,22 +24,25 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         String messageType = message.getType();
         switch (messageType) {
             case "RegisterMessage":
-                RegisterMessage((RegisterMessage) message);
+                processRegisterMessage((RegisterMessage) message);
                 break;
             case "LoginMessage":
-                LoginMessage((LoginMessage) message);
+                processLoginMessage((LoginMessage) message);
                 break;
             case "LogoutMessage":
-                LogoutMessage();
+                processLogoutMessage();
                 break;
             case "FollowMessage":
-                FollowMessage((FollowMessage)message);
+                processFollowMessage((FollowMessage)message);
                 break;
             case "PostMessage":
+                processPostMessage((PostMessage)message);
                 break;
             case "PrivateMessage":
+                processPrivateMessage((PrivateMessage) message);
                 break;
             case "UserListMessage":
+                processUserListMessage();
                 break;
             case "StatMessage":
                 break;
@@ -53,7 +56,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     }
 
 
-    private void RegisterMessage(RegisterMessage message) {
+    private void processRegisterMessage(RegisterMessage message) {
         if (!dataBase.isRegistered(connectionId)) {
             dataBase.registerClient(connectionId, message);
             userName = message.getUserName();
@@ -67,7 +70,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    private void LoginMessage(LoginMessage message) {
+    private void processLoginMessage(LoginMessage message) {
         if (dataBase.login(connectionId, message)) { // checks userName, password and if the client is already logged in
             AckMessage ack = new AckMessage((short) 2, null);
             connections.send(connectionId, ack);
@@ -77,7 +80,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    private void LogoutMessage() {
+    private void processLogoutMessage() {
         if (dataBase.isLoggedIn(connectionId)) {
             dataBase.logOut(connectionId);
             AckMessage ack = new AckMessage((short) 3, null);
@@ -89,7 +92,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    private void FollowMessage(FollowMessage message) {
+    private void processFollowMessage(FollowMessage message) {
         if (dataBase.isLoggedIn(connectionId)){
             List<String> usersToFollow = message.getUsersToFollow();
             LinkedList<String> addedOrRemovedFollowers = new LinkedList<>();
@@ -117,16 +120,59 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    private void PostMessage(PostMessage message){
-        for (String taggedUser:message.getTaggedUsers()) {
-            NotificationMessage notificationMessage = new NotificationMessage(
-                    false,userName,message.getPost());
-            int temp = dataBase.getIdFromUserName(taggedUser);
-            if (temp!=-1){
-                connections.send(temp,notificationMessage);
+    private void processPostMessage(PostMessage message){
+        if ( dataBase.isLoggedIn(connectionId)) {
+            for (String taggedUser:message.getTaggedUsers()) {
+                if (dataBase.isRegisteredByName(taggedUser)) {
+                    NotificationMessage notificationMessage = new NotificationMessage(
+                            false,userName,message.getPost());
+                    int temp = dataBase.getIdFromUserName(taggedUser);
+                    if (temp!=-1){
+                        connections.send(temp,notificationMessage);
+                    }
+                }
+            }
+            dataBase.addPost(connectionId, message);
+            connections.send(connectionId, new AckMessage((short)5, null));
+        }
+        else {
+            connections.send(connectionId, new ErrorMessage((short) 5));
+        }
+    }
+
+    private void processPrivateMessage(PrivateMessage message) {
+        if (dataBase.isLoggedIn(connectionId) && dataBase.isRegisteredByName(message.getReceiverUser())) {
+            NotificationMessage notificationMessage = new NotificationMessage(true, userName, message.getContent());
+            dataBase.addPrivateMessage(connectionId, message);
+            connections.send(dataBase.getIdFromUserName(message.getReceiverUser()), notificationMessage);
+            connections.send(connectionId, new AckMessage((short) 6, null));
+        }
+        else {
+            connections.send(connectionId, new ErrorMessage((short) 6));
+        }
+    }
+
+    private void processUserListMessage() {
+        if (dataBase.isLoggedIn(connectionId)) {
+            AckUserListMessage ack = new AckUserListMessage(dataBase.getUserNamesList());
+            connections.send(connectionId, ack);
+        }
+        else {
+            connections.send(connectionId, new ErrorMessage((short) 7));
+        }
+    }
+
+    private void processStatMessage(StatMessage message) {
+        if(dataBase.isLoggedIn(connectionId) && dataBase.isRegisteredByName(message.getuserToCheck())) {
+            int idToCheck = dataBase.getIdFromUserName(message.getuserToCheck());
+            short numOfPosts = (short) dataBase.getClientsPostList(idToCheck).size();
+            if (dataBase.getClientFollowersList(message.getuserToCheck()) != null) {
+
             }
         }
     }
+
+
 
     public int getConnectionId() {
         return connectionId;
