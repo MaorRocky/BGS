@@ -12,6 +12,26 @@ public class DataBase {
         private static DataBase instance = new DataBase();
     }
 
+
+    /*
+     *  registeredClients this Hashmap links to each User - ClientID a boolean value which detriments
+     *  if the user is registered or not.
+     *
+     *  clientToUserNameAndPassword this hashmap links each user -clientID to a Pair which holds a name and username,
+     *  this will help us to determine if the user credentials are correct.
+     *
+     *  loggedinClients this Hashmap links to each User - ClientID a boolean value which detriments
+     *  if the user is logged in  or not .
+     *
+     *  clientToFollowList this Hashmap links to each User - userName(String) a linkedList<String> which will
+     *  include all of the users which the User is following .
+     *
+     *  clientToFollowers this Hashmap links to each User - userName(String) a linkedList<String> which will
+     *  include all of the users which follows the user.
+     *
+     *  clientToPostList  this Hashmap links to each User - userName(String) a linkedList<String> which will
+     *  include all the posts which the user posted*/
+
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Boolean> loggedinClients = new ConcurrentHashMap<>();
