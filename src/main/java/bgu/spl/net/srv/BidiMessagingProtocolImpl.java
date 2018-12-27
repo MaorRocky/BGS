@@ -3,6 +3,7 @@ package bgu.spl.net.srv;
 import bgu.spl.net.api.bidi.*;
 import bgu.spl.net.srv.messages.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
@@ -91,11 +92,16 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     private void FollowMessage(FollowMessage message) {
         if (dataBase.isLoggedIn(connectionId)){
             List<String> usersToFollow = message.getUsersToFollow();
+            LinkedList<String> addedFollowers = new LinkedList<>();
             if (message.isFollow()) {
                 for (String user: usersToFollow) {
                     dataBase.addFollower(userName, user);
+                    if (!user.equals(""))
+                    addedFollowers.add(user);
                 }
             }
+            AckFollowMessage ackFollowMessage = new AckFollowMessage(addedFollowers);
+            connections.send(connectionId,ackFollowMessage);
             else {
 
             }

@@ -103,15 +103,19 @@ public class DataBase {
     /*we add clientToFollow to the clientName followList
      * we add clientName to clientToFollow followersList */
 
-    public void addFollower(String clientName, String clientToFollow) {
+    public String addFollower(String clientName, String clientToFollow) {
+        String addedFollower = "";
         if (!clientToFollowList.get(clientName).contains(clientToFollow)) {
             clientToFollowList.get(clientName).addLast(clientToFollow);
+            addedFollower = clientToFollow;
         }
         if (clientToFollowers.containsKey(clientToFollow)) {
             if (!clientToFollowers.get(clientToFollow).contains(clientName)) {
                 clientToFollowers.get(clientToFollow).addLast(clientName);
             }
         }
+        /*if the user indeed started following we will return it */
+        return addedFollower;
     }
 
 
