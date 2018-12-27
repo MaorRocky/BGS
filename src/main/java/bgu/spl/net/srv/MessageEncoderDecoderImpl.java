@@ -106,20 +106,14 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             byte[] opcode = shortToBytes(s);
             byte[] user = ((NotificationMessage) message).getPostingUser().getBytes();
             byte[] content = ((NotificationMessage) message).getContent().getBytes();
-
-
             toReturn = new byte[3 + opcode.length + user.length + content.length];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
+            copyFromTo(toReturn, opcode, 0);
             toReturn[opcode.length] = (byte) type;
-            for (int j = 0; j < user.length; j++) {
-                toReturn[j + 1 + opcode.length] = user[j];
-            }
+            /*added +1 since we added the "type byte*/
+            copyFromTo(toReturn, user, opcode.length + 1);
             toReturn[opcode.length + user.length] = '\0';
-            for (int k = 0; k < content.length; k++) {
-                toReturn[k + 1 + opcode.length + user.length] = content[k];
-            }
+            /*added +2 since we added +1 for the type byte and we also added \0 char*/
+            copyFromTo(toReturn, content, opcode.length + 2 + user.length);
             toReturn[toReturn.length - 1] = '\0';
 
         }
@@ -213,8 +207,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     }
 
 
-
-
+    public static void copyFromTo(byte[] arr, byte toCopy[], int from) {
+        for (int i = 0; i < toCopy.length; i++) {
+            arr[i + from] = toCopy[i];
+        }
+    }
 
 
 }
