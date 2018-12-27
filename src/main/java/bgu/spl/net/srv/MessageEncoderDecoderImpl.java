@@ -4,7 +4,6 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.srv.messages.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message> {
     private byte[] bytes = new byte[1 << 10];
@@ -108,20 +107,10 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             byte[] opcode = shortToBytes(s);
             byte[] user = ((NotificationMessage) message).getPostingUser().getBytes();
             byte[] content = ((NotificationMessage) message).getContent().getBytes();
-
-
             toReturn = new byte[3 + opcode.length + user.length + content.length];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
-            toReturn[opcode.length] = (byte)type;
-            for (int j = 0; j < user.length; j++) {
-                toReturn[j + 1 + opcode.length] = user[j];
-            }
-            toReturn[opcode.length + user.length] = '\0';
-            for (int k = 0; k < content.length; k++) {
-                toReturn[k + 1 + opcode.length + user.length] = content[k];
-            }
+            copyFromTo(toReturn,opcode,0);
+            copyFromTo(toReturn,user,opcode.length);
+            copyFromTo(toReturn,content,opcode.length+user.length);
             toReturn[toReturn.length-1] = '\0';
         }
 
@@ -131,15 +120,9 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
             byte[] optional = ((AckMessage) message).getOptional().getBytes();
             toReturn = new byte[opcode.length + messageOpcode.length + optional.length + 1];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
-            for (int j = 0; j < messageOpcode.length; j++) {
-                toReturn[opcode.length + j] = messageOpcode[j];
-            }
-            for (int k = 0; k < optional.length; k++) {
-                toReturn[opcode.length + messageOpcode.length + k] = optional[k];
-            }
+            copyFromTo(toReturn,opcode,0);
+            copyFromTo(toReturn,messageOpcode,opcode.length);
+            copyFromTo(toReturn,optional,opcode.length+optional.length);
             toReturn[toReturn.length-1] = '\0';
         }
 
@@ -148,12 +131,8 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((ErrorMessage) message).getOpcode());
             toReturn = new byte[opcode.length + messageOpcode.length + 1];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
-            for (int j = 0; j < messageOpcode.length; j++) {
-                toReturn[opcode.length + j] = messageOpcode[j];
-            }
+            copyFromTo(toReturn,opcode,0);
+            copyFromTo(toReturn,messageOpcode,opcode.length);
             toReturn[toReturn.length-1] = '\0';
         }
         return toReturn;
@@ -185,5 +164,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         bytesArr[0] = (byte)((num >> 8) & 0xFF);
         bytesArr[1] = (byte)(num & 0xFF);
         return bytesArr;
+    }
+
+    public static void copyFromTo(byte[] arr, byte toCopy[], int from ){
+        for (int i = 0; i <toCopy.length ; i++) {
+            arr[i+from] = toCopy[i];
+        }
     }
 }
