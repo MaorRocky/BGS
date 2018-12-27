@@ -19,6 +19,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         this.connections = connections;
     }
 
+
     @Override
     public void process(Message message) {
         String messageType = message.getType();
