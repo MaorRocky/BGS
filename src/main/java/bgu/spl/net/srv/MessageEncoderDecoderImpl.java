@@ -135,19 +135,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             copyFromTo(toReturn, userNameListString, opcode.length + messageOpcode.length + numOfUsers.length);
             toReturn[toReturn.length - 1] = '\0';
 
-        }
-        // "normal" Ackmessage
-        else if (message instanceof AckMessage) {
-            short s = 10;
-            byte[] opcode = shortToBytes(s);
-            byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
-            byte[] optional = ((AckMessage) message).getOptional().getBytes();
-            toReturn = new byte[opcode.length + messageOpcode.length + optional.length + 1];
-            copyFromTo(toReturn, opcode, 0);
-            copyFromTo(toReturn, messageOpcode, opcode.length);
-            copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);
-            toReturn[toReturn.length - 1] = '\0';
-
         } else if (message instanceof AckStatMessage) {
             byte Opcode[] = shortToBytes((short) 10);
             byte messageOpcode[] = shortToBytes((short) 8);
@@ -161,6 +148,20 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             copyFromTo(toReturn, NumPosts, Opcode.length + messageOpcode.length);
             copyFromTo(toReturn, NumFollowers, Opcode.length + messageOpcode.length + NumPosts.length);
             copyFromTo(toReturn, NumFollowing, Opcode.length + messageOpcode.length + NumFollowers.length + NumFollowing.length);
+
+        }
+
+        // "normal" Ackmessage
+        else if (message instanceof AckMessage) {
+            short s = 10;
+            byte[] opcode = shortToBytes(s);
+            byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
+            byte[] optional = ((AckMessage) message).getOptional().getBytes();
+            toReturn = new byte[opcode.length + messageOpcode.length + optional.length + 1];
+            copyFromTo(toReturn, opcode, 0);
+            copyFromTo(toReturn, messageOpcode, opcode.length);
+            copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);
+            toReturn[toReturn.length - 1] = '\0';
 
         }
         // Error message
