@@ -189,7 +189,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     }
 
 
-    public static void copyFromTo(byte[] arr, byte toCopy[], int from) {
+    public void copyFromTo(byte[] arr, byte toCopy[], int from) {
         for (int i = 0; i < toCopy.length; i++) {
             arr[i + from] = toCopy[i];
         }
