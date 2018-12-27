@@ -92,23 +92,27 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     private void FollowMessage(FollowMessage message) {
         if (dataBase.isLoggedIn(connectionId)){
             List<String> usersToFollow = message.getUsersToFollow();
-            LinkedList<String> addedFollowers = new LinkedList<>();
+            LinkedList<String> addedOrRemovedFollowers = new LinkedList<>();
             if (message.isFollow()) {
-                for (String user: usersToFollow) {
-                    dataBase.addFollower(userName, user);
-                    if (!user.equals(""))
-                    addedFollowers.add(user);
+                for (String followUser: usersToFollow) {
+                    String temp = dataBase.addFollower(userName, followUser);
+                    if (!temp.equals(""))
+                    addedOrRemovedFollowers.add(temp);
                 }
             }
-            AckFollowMessage ackFollowMessage = new AckFollowMessage(addedFollowers);
-            connections.send(connectionId,ackFollowMessage);
             else {
-
+                for (String unfollowUser:message.getUsersToFollow()) {
+                    String temp =   dataBase.removeFollower(userName,unfollowUser);
+                    if (!temp.equals(""))
+                        addedOrRemovedFollowers.add(temp);
+                }
             }
+            AckFollowMessage ackFollowMessage = new AckFollowMessage(addedOrRemovedFollowers);
+            connections.send(connectionId,ackFollowMessage);
 
         }
         else {
-            ErrorMessage error = new ErrorMessage((short) 2);
+            ErrorMessage error = new ErrorMessage((short) 4);
             connections.send(connectionId, error);
         }
     }

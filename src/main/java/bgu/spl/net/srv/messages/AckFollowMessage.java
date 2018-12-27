@@ -5,11 +5,11 @@ import java.util.List;
 
 public class AckFollowMessage extends AckMessage {
     private short numOfUsers;
-    LinkedList<String> users;
+    private LinkedList<String> users;
 
     public AckFollowMessage(LinkedList<String> users) {
         this.users = users;
-        numOfUsers = (short)users.size();
+        this.numOfUsers = (short)users.size();
     }
 
     public short getNumOfUsers() {

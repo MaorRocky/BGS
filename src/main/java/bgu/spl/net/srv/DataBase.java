@@ -121,15 +121,18 @@ public class DataBase {
 
     /*We will remove clientToUnfollow from clientName following list, which means clientName will stop
      * following clientToUnfollow
-     * we will remove clientName from clientToUnfollow followers lise because clientName stopped
+     * we will remove clientName from clientToUnfollow followers list because clientName stopped
      * following him*/
-    public void removeFollower(String clientName, String clientToUnfollow) {
+    public String removeFollower(String clientName, String clientToUnfollow) {
+        String removedFollower = "";
         if (clientToFollowList.get(clientName).contains(clientToUnfollow)) {
             clientToFollowList.get(clientName).remove(clientToUnfollow);
+            removedFollower = clientToUnfollow;
         }
         if (clientToFollowers.get(clientToUnfollow).contains(clientName)) {
             clientToFollowList.get(clientToUnfollow).remove(clientName);
         }
+        return removedFollower;
 
     }
 

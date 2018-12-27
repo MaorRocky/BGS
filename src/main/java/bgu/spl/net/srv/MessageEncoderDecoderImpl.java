@@ -121,7 +121,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             }
             toReturn[toReturn.length - 1] = '\0';
 
-
+/*TODO change it*/
         } else if (message instanceof AckFollowMessage) {
             byte[] opcode = shortToBytes((short) 10);
             byte[] followOpcode = shortToBytes((short) 4);
