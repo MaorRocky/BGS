@@ -104,10 +104,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             else {
                 type = '1';
             }
-            Short s = 9;
+            Short s = 9; //opcode = 9
             byte[] opcode = shortToBytes(s);
             byte[] user = ((NotificationMessage) message).getPostingUser().getBytes();
             byte[] content = ((NotificationMessage) message).getContent().getBytes();
+
 
             toReturn = new byte[3 + opcode.length + user.length + content.length];
             for (int i = 0; i < opcode.length; i++) {
@@ -159,7 +160,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     }
 
 
-
     private short bytesToShort(byte[] byteArr)  {
         short result = (short)((byteArr[0] & 0xff) << 8);
         result += (short)(byteArr[1] & 0xff);
@@ -177,6 +177,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         nextZeroByteCounter = 0;
         return result;
     }
+
 
     public byte[] shortToBytes(short num)
     {
