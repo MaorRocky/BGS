@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
 
-    private ConcurrentHashMap<Integer, bgu.spl.net.srv.bidi.ConnectionHandler<T>> clients;
+    private ConcurrentHashMap<Integer, ConnectionHandler<T>> clients;
     private InformationHolder information;
 
     public ConnectionsImpl() {
