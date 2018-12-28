@@ -4,7 +4,7 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.srv.messages.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+
 
 public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message> {
     private byte[] bytes = new byte[1 << 10];
@@ -94,6 +94,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     public byte[] encode(Message message) {
 
         byte[] toReturn;
+        // Notification message
         if (message instanceof NotificationMessage) {
             char type;
             if (((NotificationMessage) message).isPrivate()) {
@@ -105,23 +106,19 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             byte[] opcode = shortToBytes(s);
             byte[] user = ((NotificationMessage) message).getPostingUser().getBytes();
             byte[] content = ((NotificationMessage) message).getContent().getBytes();
-
-
             toReturn = new byte[3 + opcode.length + user.length + content.length];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
+            copyFromTo(toReturn, opcode, 0);
             toReturn[opcode.length] = (byte) type;
-            for (int j = 0; j < user.length; j++) {
-                toReturn[j + 1 + opcode.length] = user[j];
-            }
+            /*added +1 since we added the "type byte*/
+            copyFromTo(toReturn, user, opcode.length + 1);
             toReturn[opcode.length + user.length] = '\0';
-            for (int k = 0; k < content.length; k++) {
-                toReturn[k + 1 + opcode.length + user.length] = content[k];
-            }
+            /*added +2 since we added +1 for the type byte and we also added \0 char*/
+            copyFromTo(toReturn, content, opcode.length + 2 + user.length);
             toReturn[toReturn.length - 1] = '\0';
 
-        } else if (message instanceof AckFollowMessage) {
+        }
+        // AckMessage for follow/unfollow
+        else if (message instanceof AckFollowMessage) {
             byte[] opcode = shortToBytes((short) 10);
             byte[] messageOpcode = shortToBytes((short) 4);
             byte[] numOfUsers = shortToBytes(((AckFollowMessage) message).getNumOfUsers());
@@ -131,48 +128,63 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             }
             byte[] userNameListString = namesString.getBytes();
             toReturn = new byte[opcode.length + messageOpcode.length + numOfUsers.length + userNameListString.length];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
-            for (int i = 0; i < messageOpcode.length; i++) {
-                toReturn[i + opcode.length] = messageOpcode[i];
-            }
-            for (int i = 0; i < numOfUsers.length; i++) {
-                toReturn[i + opcode.length + messageOpcode.length] = numOfUsers[i];
-            }
-            for (int i = 0; i < userNameListString.length; i++) {
-                toReturn[i + opcode.length + messageOpcode.length + numOfUsers.length] = userNameListString[i];
-            }
-            toReturn[toReturn.length - 1] = '\0';
+            copyFromTo(toReturn, opcode, 0);
+            copyFromTo(toReturn, messageOpcode, opcode.length);
+            copyFromTo(toReturn, numOfUsers, opcode.length + messageOpcode.length);
+            copyFromTo(toReturn, userNameListString, opcode.length + messageOpcode.length + numOfUsers.length);
 
 
-        } else if (message instanceof AckMessage) {
+        } else if (message instanceof AckStatMessage) {
+            byte Opcode[] = shortToBytes((short) 10);
+            byte messageOpcode[] = shortToBytes((short) 8);
+            byte[] NumPosts = shortToBytes(((AckStatMessage) message).getNumOfPosts());
+            byte[] NumFollowers = shortToBytes(((AckStatMessage) message).getNumOfFollowers());
+            byte[] NumFollowing = shortToBytes(((AckStatMessage) message).getNumOfFollowing());
+            toReturn = new byte[Opcode.length + messageOpcode.length + NumPosts.length
+                    + NumFollowers.length + NumFollowing.length];
+            copyFromTo(toReturn, Opcode, 0);
+            copyFromTo(toReturn, messageOpcode, Opcode.length);
+            copyFromTo(toReturn, NumPosts, Opcode.length + messageOpcode.length);
+            copyFromTo(toReturn, NumFollowers, Opcode.length + messageOpcode.length + NumPosts.length);
+            copyFromTo(toReturn, NumFollowing, Opcode.length + messageOpcode.length + NumFollowers.length + NumFollowing.length);
+
+        } else if (message instanceof AckUserListMessage) {
+            byte[] Opcode = shortToBytes((short) 10);
+            byte[] messageOpcode = shortToBytes((short) 7);
+            byte[] NumOfUsers = shortToBytes(((AckUserListMessage) message).getNumOfUsers());
+            String UserNameListString = "";
+            for (String UserName : ((AckUserListMessage) message).getUserList()) {
+                UserNameListString += UserName + '\0';
+            }
+            byte[] UserNameListByteArray = UserNameListString.getBytes();
+            toReturn = new byte[Opcode.length + messageOpcode.length + NumOfUsers.length + UserNameListByteArray.length];
+            copyFromTo(toReturn, Opcode, 0);
+            copyFromTo(toReturn, messageOpcode, Opcode.length);
+            copyFromTo(toReturn, NumOfUsers, Opcode.length + messageOpcode.length);
+            copyFromTo(toReturn, UserNameListByteArray, Opcode.length + messageOpcode.length + NumOfUsers.length);
+        }
+
+        // "normal" Ackmessage
+        else if (message instanceof AckMessage) {
             short s = 10;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
             byte[] optional = ((AckMessage) message).getOptional().getBytes();
             toReturn = new byte[opcode.length + messageOpcode.length + optional.length + 1];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
-            for (int j = 0; j < messageOpcode.length; j++) {
-                toReturn[opcode.length + j] = messageOpcode[j];
-            }
-            for (int k = 0; k < optional.length; k++) {
-                toReturn[opcode.length + messageOpcode.length + k] = optional[k];
-            }
+            copyFromTo(toReturn, opcode, 0);
+            copyFromTo(toReturn, messageOpcode, opcode.length);
+            copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);
             toReturn[toReturn.length - 1] = '\0';
-        } else {
+
+        }
+        // Error message
+        else {
             short s = 11;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((ErrorMessage) message).getOpcode());
             toReturn = new byte[opcode.length + messageOpcode.length + 1];
-            for (int i = 0; i < opcode.length; i++) {
-                toReturn[i] = opcode[i];
-            }
-            for (int j = 0; j < messageOpcode.length; j++) {
-                toReturn[opcode.length + j] = messageOpcode[j];
-            }
+            copyFromTo(toReturn, opcode, 0);
+            copyFromTo(toReturn, messageOpcode, opcode.length);
             toReturn[toReturn.length - 1] = '\0';
         }
         return toReturn;
@@ -204,4 +216,13 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         bytesArr[1] = (byte) (num & 0xFF);
         return bytesArr;
     }
+
+
+    public void copyFromTo(byte[] arr, byte toCopy[], int from) {
+        for (int i = 0; i < toCopy.length; i++) {
+            arr[i + from] = toCopy[i];
+        }
+    }
+
+
 }

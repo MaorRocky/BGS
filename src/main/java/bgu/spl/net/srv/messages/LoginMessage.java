@@ -5,6 +5,8 @@ public class LoginMessage extends Message {
     private String password;
 
     public LoginMessage(String toProcess) {
+        userName = "";
+        password = "";
         process(toProcess);
     }
 
@@ -17,16 +19,19 @@ public class LoginMessage extends Message {
     }
 
     public void process(String toProcess) {
+
         int index = 0;
         while (toProcess.charAt(index) != '\0') { //creating the userName
             userName = userName + toProcess.charAt(index);
             index ++;
         }
         index++;
-        while (index < toProcess.lastIndexOf('\0')) {
+        //TODO check why popString returns extra two \0 in the end of the string
+        while (toProcess.charAt(index) != '\0') {
             password = password + toProcess.charAt(index);
             index++;
         }
+        //index < toProcess.lastIndexOf('\0')
     }
 
     @Override
