@@ -56,7 +56,6 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         return false;
     }
 
-
     private void processRegisterMessage(RegisterMessage message) {
         if (!dataBase.isRegistered(connectionId)) {
             dataBase.registerClient(connectionId, message);
