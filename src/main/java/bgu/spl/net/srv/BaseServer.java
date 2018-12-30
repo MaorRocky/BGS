@@ -53,7 +53,7 @@ public abstract class BaseServer<T> implements Server<T> {
                 idCounter++;
 
 
-                execute(handler);
+                    execute(handler);
             }
         } catch (IOException ex) {
         }

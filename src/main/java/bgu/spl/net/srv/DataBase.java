@@ -36,6 +36,8 @@ public class DataBase {
      *
      *  clientNameToClientId this Hashmap links to each User - ClientName(String) a Int value which is
      *  the specific clientID.
+     *
+     *  clientToPricateMessageList is a hsshmap which links to each user his privateMessageList.
      *  */
 
     private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
