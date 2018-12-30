@@ -4,7 +4,7 @@ import bgu.spl.net.srv.*;
 
 import java.util.Arrays;
 
-public class Tester {
+public class    Tester {
     public static void main(String[] args) {
 
         MessageEncoderDecoderImpl messageEncoderDecoder = new MessageEncoderDecoderImpl();
