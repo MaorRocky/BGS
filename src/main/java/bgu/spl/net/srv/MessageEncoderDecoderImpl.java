@@ -25,7 +25,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         Message toSend = null;
         switch (nextShort) {
             case 1: //register
-                System.out.println("Register me");
                 if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
