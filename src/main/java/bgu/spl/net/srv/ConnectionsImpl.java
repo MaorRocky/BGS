@@ -13,7 +13,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     public ConnectionsImpl() {
         clients = new ConcurrentHashMap<>();
-        information = DataBase.getInstance();
     }
 
     public boolean send(int connectionId, T msg) {
