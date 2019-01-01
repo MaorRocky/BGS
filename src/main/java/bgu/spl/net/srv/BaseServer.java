@@ -51,7 +51,7 @@ public abstract class BaseServer<T> implements Server<T> {
                 connections.addClient(idCounter, handler);
 
                 idCounter++;
-
+                System.out.println("Client connected");
 
                     execute(handler);
             }
