@@ -41,6 +41,9 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     //String check = popString();
                     //System.out.println(check);
                     toSend = new LoginMessage(popString());
+                    System.out.println(toSend.getType());
+                    System.out.println(((LoginMessage) toSend).getUserName());
+                    System.out.println(((LoginMessage) toSend).getPassword());
                 }
                 break;
 
