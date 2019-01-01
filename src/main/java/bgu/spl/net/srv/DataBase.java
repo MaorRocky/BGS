@@ -10,9 +10,6 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataBase {
-    private static class SingletonHolder {
-        private static DataBase instance = new DataBase();
-    }
 
 
     /*
@@ -40,19 +37,29 @@ public class DataBase {
      *  clientToPricateMessageList is a hsshmap which links to each user his privateMessageList.
      *  */
 
-    private ConcurrentHashMap<Integer, Boolean> registeredClients = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, Boolean> loggedinClients = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, LinkedList<PostMessage>> clientToPostList = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, Integer> clientNameToClientId = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, LinkedList<PrivateMessage>> clientToPrivateMessageList = new ConcurrentHashMap<>();
-    private LinkedList<String> userNamesList = new LinkedList<>();
+    private ConcurrentHashMap<Integer, Boolean> registeredClients;
+    private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword;
+    private ConcurrentHashMap<Integer, Boolean> loggedinClients;
+    private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList;
+    private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers;
+    private ConcurrentHashMap<Integer, LinkedList<PostMessage>> clientToPostList;
+    private ConcurrentHashMap<String, Integer> clientNameToClientId;
+    private ConcurrentHashMap<Integer, LinkedList<PrivateMessage>> clientToPrivateMessageList;
+    private LinkedList<String> userNamesList;
 
-    public static DataBase getInstance() {
-        return SingletonHolder.instance;
+    public DataBase() {
+        registeredClients = new ConcurrentHashMap<>();
+        clientToUserNameAndPassword = new ConcurrentHashMap<>();
+        loggedinClients = new ConcurrentHashMap<>();
+        clientToFollowList = new ConcurrentHashMap<>();
+        clientToFollowers = new ConcurrentHashMap<>();
+        clientToPostList = new ConcurrentHashMap<>();
+        clientNameToClientId = new ConcurrentHashMap<>();
+        clientToPrivateMessageList = new ConcurrentHashMap<>();
+        userNamesList = new LinkedList<>();
+
     }
+
 
     public boolean isRegistered(Integer clientId) {
         if (registeredClients.containsKey(clientId)) {

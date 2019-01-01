@@ -7,17 +7,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
-    private DataBase dataBase = DataBase.getInstance();
+    private DataBase dataBase;
     private int connectionId;
     private Connections connections;
     private String userName;
     private String password;
+
+    public BidiMessagingProtocolImpl(DataBase dataBase) {
+        this.dataBase = dataBase;
+    }
 
     @Override
     public void start(int connectionId, Connections connections) {
         this.connectionId = connectionId;
         this.connections = connections;
     }
+
 
     @Override
     public void process(Message message) {

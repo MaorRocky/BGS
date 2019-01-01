@@ -27,10 +27,11 @@ public class RegisterMessage extends Message {
             index ++;
         }
         index++;
-        while (index < toProcess.lastIndexOf('\0')) {
+        while (toProcess.charAt(index) != '\0') {
             password = password + toProcess.charAt(index);
             index++;
         }
+        //index < toProcess.lastIndexOf('\0')
     }
 
     @Override
