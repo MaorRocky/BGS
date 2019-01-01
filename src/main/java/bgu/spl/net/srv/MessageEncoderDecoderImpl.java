@@ -62,15 +62,13 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     toSend = new FollowMessage(numOfUsers, popString());
                 }
                 break;
-
+            /*Post Message*/
             case 5:
                 if (nextByte == '\0') {
                     toSend = new PostMessage(popString());
-                    System.out.println(((PostMessage) toSend).getPost());
-                    System.out.println(((PostMessage) toSend).getTaggedUsers());
                 }
                 break;
-            /*Post Message*/
+
             case 6:
                 if (nextByte == '\0') {
                     nextZeroByteCounter++;
