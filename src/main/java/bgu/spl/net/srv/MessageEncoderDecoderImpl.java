@@ -214,7 +214,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     }
 
 
-    public byte[] shortToBytes(short num) {
+    private byte[] shortToBytes(short num) {
         byte[] bytesArr = new byte[2];
         bytesArr[0] = (byte) ((num >> 8) & 0xFF);
         bytesArr[1] = (byte) (num & 0xFF);
@@ -222,7 +222,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     }
 
 
-    public void copyFromTo(byte[] arr, byte toCopy[], int from) {
+    private void copyFromTo(byte[] arr, byte toCopy[], int from) {
         for (int i = 0; i < toCopy.length; i++) {
             arr[i + from] = toCopy[i];
         }

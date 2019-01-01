@@ -3,11 +3,12 @@ package bgu.spl.net.srv;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.bidi.ConnectionHandler;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
 
-    private ConcurrentHashMap<Integer, bgu.spl.net.srv.bidi.ConnectionHandler<T>> clients;
+    private ConcurrentHashMap<Integer, ConnectionHandler<T>> clients;
     private DataBase information;
 
     public ConnectionsImpl() {
@@ -33,6 +34,10 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     public void disconnect(int connectionId) {
         if (clients.containsKey(connectionId)) {
+            try {
+                clients.get(connectionId).close();
+            }
+            catch (IOException e){}
             clients.remove(connectionId);
         }
     }

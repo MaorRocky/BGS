@@ -23,6 +23,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         this.connections = connections;
     }
 
+
     @Override
     public void process(Message message) {
         String messageType = message.getType();
@@ -59,7 +60,6 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     public boolean shouldTerminate() {
         return false;
     }
-
 
     private void processRegisterMessage(RegisterMessage message) {
         if (!dataBase.isRegistered(connectionId)) {
