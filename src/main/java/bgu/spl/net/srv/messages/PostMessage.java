@@ -1,5 +1,6 @@
 package bgu.spl.net.srv.messages;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class PostMessage extends Message {
@@ -7,6 +8,8 @@ public class PostMessage extends Message {
     private List<String> taggedUsers;
 
     public PostMessage(String toProcess) {
+        taggedUsers = new LinkedList<>();
+        post = "";
         process(toProcess);
 
     }
@@ -25,10 +28,12 @@ public class PostMessage extends Message {
         while (buffer.indexOf("@") != -1) {
             String tagToAdd = "";
             int tag = buffer.indexOf("@") + 1;
-            while (buffer.charAt(tag) != ' ') {
+            int len = tmp.length();
+            while (tag < len && buffer.charAt(tag) != ' ') {
                 tagToAdd = tagToAdd + buffer.charAt(tag);
                 tag++;
             }
+
             buffer.delete(0, tag);
             taggedUsers.add(tagToAdd);
         }
@@ -37,7 +42,11 @@ public class PostMessage extends Message {
 
 
     public void process(String toProcess) {
-        post = toProcess.substring(0, toProcess.length()-1);
+        int i = 0;
+        while (toProcess.charAt(i) != '\0') {
+            post += toProcess.charAt(i);
+            i++;
+        }
         findTaggedUsers();
     }
 

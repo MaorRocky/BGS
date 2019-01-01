@@ -4,7 +4,6 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.srv.messages.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 
 public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message> {
@@ -71,7 +70,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     System.out.println(((PostMessage) toSend).getTaggedUsers());
                 }
                 break;
-
+            /*Post Message*/
             case 6:
                 if (nextByte == '\0') {
                     nextZeroByteCounter++;
