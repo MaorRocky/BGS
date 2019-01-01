@@ -12,7 +12,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     private int length = 0;
     private int nextZeroByteCounter = 0;
     private byte[] numOfUsersBytes = new byte[2];
-    private short numOfUsers;
+    private short numOfUsers = -1;
 
     public Message decodeNextByte(byte nextByte) {
         pushByte(nextByte);
@@ -25,6 +25,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         Message toSend = null;
         switch (nextShort) {
             case 1: //register
+                System.out.println("Register me");
                 if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
