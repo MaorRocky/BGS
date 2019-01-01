@@ -38,7 +38,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
+                    //String check = popString();
+                    //System.out.println(check);
                     toSend = new LoginMessage(popString());
+                    //System.out.println(((LoginMessage) toSend).getUserName());
+                    //System.out.println(((LoginMessage) toSend).getPassword());
                 }
                 break;
 
@@ -56,7 +60,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 } else if (nextByte == '\0') {
                     nextZeroByteCounter++;
                 }
-                if (nextZeroByteCounter == numOfUsers - 1) {
+                if (nextZeroByteCounter == numOfUsers) {
                     toSend = new FollowMessage(numOfUsers, popString());
                 }
                 break;
