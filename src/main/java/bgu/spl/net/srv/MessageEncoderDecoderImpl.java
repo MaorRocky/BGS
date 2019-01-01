@@ -4,6 +4,7 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.srv.messages.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 
 public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message> {
@@ -12,7 +13,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
     private int length = 0;
     private int nextZeroByteCounter = 0;
     private byte[] numOfUsersBytes = new byte[2];
-    private short numOfUsers;
+    private short numOfUsers = -1;
 
     public Message decodeNextByte(byte nextByte) {
         pushByte(nextByte);
@@ -30,6 +31,8 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 if (nextZeroByteCounter == 2) {
                     toSend = new RegisterMessage(popString());
+                    System.out.println(((RegisterMessage) toSend).getUserName());
+                    System.out.println(((RegisterMessage) toSend).getPassword());
                 }
                 break;
 
@@ -41,13 +44,14 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     //String check = popString();
                     //System.out.println(check);
                     toSend = new LoginMessage(popString());
-                    //System.out.println(((LoginMessage) toSend).getUserName());
-                    //System.out.println(((LoginMessage) toSend).getPassword());
+                    System.out.println(((LoginMessage) toSend).getUserName());
+                    System.out.println(((LoginMessage) toSend).getPassword());
                 }
                 break;
 
             case 3://logout
                 toSend = new LogoutMessage();
+                System.out.println(toSend.getType());
                 popString();
                 break;
 
@@ -62,12 +66,22 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 if (nextZeroByteCounter == numOfUsers) {
                     toSend = new FollowMessage(numOfUsers, popString());
+                    List<String> list = ((FollowMessage) toSend).getUsersToFollow();
+                    System.out.println(list.size());
+                    for (String name : list) {
+                        System.out.println(name);
+                    }
+                    System.out.println(toSend.getType());
+                    System.out.println("NUM OF USERES TO FOLLOW" + ((FollowMessage) toSend).getNumOfUsersToFollow());
+                    System.out.println(((FollowMessage) toSend).isFollow());
                 }
                 break;
 
             case 5:
                 if (nextByte == '\0') {
                     toSend = new PostMessage(popString());
+                    System.out.println(((PostMessage) toSend).getPost());
+                    System.out.println(((PostMessage) toSend).getTaggedUsers());
                 }
                 break;
 
@@ -77,11 +91,14 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 if (nextZeroByteCounter == 2) {
                     toSend = new PrivateMessage(popString());
+                    System.out.println(((PrivateMessage) toSend).getReceiverUser());
+                    System.out.println(((PrivateMessage) toSend).getContent());
                 }
                 break;
 
             case 7:
                 toSend = new UserListMessage();
+                System.out.println(toSend.getType());
                 popString();
                 break;
 
@@ -89,6 +106,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 if (nextByte == '\0') {
                     toSend = new StatMessage(popString());
                 }
+                System.out.println(toSend.getType());
                 break;
 
         }

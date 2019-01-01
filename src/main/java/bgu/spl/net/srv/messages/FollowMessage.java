@@ -37,11 +37,12 @@ public class FollowMessage extends Message {
         }
         int index = 3;
         while (index < toProcess.length()) {
-            if (toProcess.charAt(index) != '0') {
+            if (toProcess.charAt(index) != '\0' && (toProcess.charAt(index) != ' ')) {
                 nameToAdd = nameToAdd + toProcess.charAt(index);
             }
             else {
-                usersToFollow.add(nameToAdd);
+                if (!nameToAdd.equals(""))
+                    usersToFollow.add(nameToAdd);
                 nameToAdd = "";
             }
             index++;
