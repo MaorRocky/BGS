@@ -75,14 +75,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 if (nextZeroByteCounter == 2) {
                     toSend = new PrivateMessage(popString());
-                    System.out.println(((PrivateMessage) toSend).getReceiverUser());
-                    System.out.println(((PrivateMessage) toSend).getContent());
                 }
                 break;
 
             case 7:
                 toSend = new UserListMessage();
-                System.out.println(toSend.getType());
                 popString();
                 break;
 
@@ -175,11 +172,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             short s = 10;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
-            byte[] optional = ((AckMessage) message).getOptional().getBytes();
-            toReturn = new byte[opcode.length + messageOpcode.length + optional.length + 1];
+          /*  byte[] optional = ((AckMessage) message).getOptional().getBytes();*/
+            toReturn = new byte[opcode.length + messageOpcode.length + 1];
             copyFromTo(toReturn, opcode, 0);
             copyFromTo(toReturn, messageOpcode, opcode.length);
-            copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);
+            /*copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);*/
             toReturn[toReturn.length - 1] = '\0';
 
         }
