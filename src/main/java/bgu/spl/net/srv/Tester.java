@@ -1,14 +1,11 @@
 package bgu.spl.net.srv;
 
-import bgu.spl.net.srv.*;
-
 import java.util.Arrays;
 
-public class    Tester {
+public class Tester {
     public static void main(String[] args) {
 
         MessageEncoderDecoderImpl messageEncoderDecoder = new MessageEncoderDecoderImpl();
-
         short followMessageOpcode = 4;
         byte[] followMessageOpcodeArr = shortToBytes(followMessageOpcode);
         System.out.println("followMessageOpcodeArr byte array: " + Arrays.toString(followMessageOpcodeArr));
@@ -39,7 +36,18 @@ public class    Tester {
             messageEncoderDecoder.decodeNextByte(bit);
         }
 
-
+        System.out.println("Test: ");
+        String s = "10";
+        String v = "9";
+        String x = "11";
+        System.out.println(Arrays.toString(s.getBytes()));
+        System.out.println(Arrays.toString(x.getBytes()));
+        System.out.println(Arrays.toString(v.getBytes()));
+        byte[] bbb = new byte[2];
+        bbb[1] = 48;
+        bbb[0] = 49;
+        String test = new String(bbb, 0, bbb.length);
+        System.out.println(test);
     }
 
 

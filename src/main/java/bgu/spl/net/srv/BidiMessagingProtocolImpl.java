@@ -63,9 +63,12 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     private void processRegisterMessage(RegisterMessage message) {
         if (!dataBase.isRegistered(connectionId)) {
+            System.out.println("client sent me REGISTER");
             dataBase.registerClient(connectionId, message);
             userName = message.getUserName();
+            System.out.println("username is : " + userName);
             password = message.getPassword();
+            System.out.println("password is : " + password);
             AckMessage ack = new AckMessage((short) 1, null);
             connections.send(connectionId, ack);
         } else {

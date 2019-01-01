@@ -42,8 +42,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     //String check = popString();
                     //System.out.println(check);
                     toSend = new LoginMessage(popString());
-                    //System.out.println(((LoginMessage) toSend).getUserName());
-                    //System.out.println(((LoginMessage) toSend).getPassword());
                 }
                 break;
 
@@ -65,7 +63,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     toSend = new FollowMessage(numOfUsers, popString());
                 }
                 break;
-
+            /*Post Message*/
             case 5:
                 if (nextByte == '\0') {
                     toSend = new PostMessage(popString());
@@ -90,6 +88,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 if (nextByte == '\0') {
                     toSend = new StatMessage(popString());
                 }
+                System.out.println(toSend.getType());
                 break;
 
         }
@@ -174,11 +173,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             short s = 10;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
-            byte[] optional = ((AckMessage) message).getOptional().getBytes();
-            toReturn = new byte[opcode.length + messageOpcode.length + optional.length + 1];
+          /*  byte[] optional = ((AckMessage) message).getOptional().getBytes();*/
+            toReturn = new byte[opcode.length + messageOpcode.length + 1];
             copyFromTo(toReturn, opcode, 0);
             copyFromTo(toReturn, messageOpcode, opcode.length);
-            copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);
+            /*copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);*/
             toReturn[toReturn.length - 1] = '\0';
 
         }

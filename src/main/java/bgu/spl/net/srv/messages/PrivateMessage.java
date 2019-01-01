@@ -26,7 +26,7 @@ public class PrivateMessage extends Message {
             index++;
         }
         index++;
-        while (index < toProcess.lastIndexOf('\0')) {
+        while (toProcess.charAt(index) != '\0') {
             content = content + toProcess.charAt(index);
             index++;
         }
