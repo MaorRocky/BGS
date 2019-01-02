@@ -173,11 +173,10 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
           /*  byte[] optional = ((AckMessage) message).getOptional().getBytes();*/
-            toReturn = new byte[opcode.length + messageOpcode.length + 1];
+            toReturn = new byte[opcode.length + messageOpcode.length];
             copyFromTo(toReturn, opcode, 0);
             copyFromTo(toReturn, messageOpcode, opcode.length);
             /*copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);*/
-            toReturn[toReturn.length - 1] = '\0';
 
         }
         // Error message
