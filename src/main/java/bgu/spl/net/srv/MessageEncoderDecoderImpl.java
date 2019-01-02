@@ -102,22 +102,29 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         byte[] toReturn;
         // Notification message
         if (message instanceof NotificationMessage) {
-            char type;
+            short type;
             if (((NotificationMessage) message).isPrivate()) {
                 type = '0';
             } else {
                 type = '1';
             }
-            Short s = 9; //opcode = 9
+            /*we will convert the short into type*/
+            byte[] typeByteArray = shortToBytes(type);
+            short s = 9; //opcode = 9
             byte[] opcode = shortToBytes(s);
             byte[] user = ((NotificationMessage) message).getPostingUser().getBytes();
             byte[] content = ((NotificationMessage) message).getContent().getBytes();
+            /*+3 because we need to add 3 bytes */
             toReturn = new byte[3 + opcode.length + user.length + content.length];
             copyFromTo(toReturn, opcode, 0);
-            toReturn[opcode.length] = (byte) type;
+
+            /*now we will add the notification type in a byte code*/
+            toReturn[opcode.length] = typeByteArray[0];
+
             /*added +1 since we added the "type byte*/
             copyFromTo(toReturn, user, opcode.length + 1);
-            toReturn[opcode.length + user.length] = '\0';
+            toReturn[opcode.length + user.length +1 ] = '\0';
+
             /*added +2 since we added +1 for the type byte and we also added \0 char*/
             copyFromTo(toReturn, content, opcode.length + 2 + user.length);
             toReturn[toReturn.length - 1] = '\0';
@@ -133,11 +140,12 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 namesString += name + '\0';
             }
             byte[] userNameListString = namesString.getBytes();
-            toReturn = new byte[opcode.length + messageOpcode.length + numOfUsers.length + userNameListString.length];
+            toReturn = new byte[opcode.length + messageOpcode.length + numOfUsers.length + userNameListString.length + 1];
             copyFromTo(toReturn, opcode, 0);
             copyFromTo(toReturn, messageOpcode, opcode.length);
             copyFromTo(toReturn, numOfUsers, opcode.length + messageOpcode.length);
             copyFromTo(toReturn, userNameListString, opcode.length + messageOpcode.length + numOfUsers.length);
+            toReturn[toReturn.length - 1] = '\0';
 
 
         } else if (message instanceof AckStatMessage) {
@@ -163,11 +171,12 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 UserNameListString += UserName + '\0';
             }
             byte[] UserNameListByteArray = UserNameListString.getBytes();
-            toReturn = new byte[Opcode.length + messageOpcode.length + NumOfUsers.length + UserNameListByteArray.length];
+            toReturn = new byte[Opcode.length + messageOpcode.length + NumOfUsers.length + UserNameListByteArray.length + 1];
             copyFromTo(toReturn, Opcode, 0);
             copyFromTo(toReturn, messageOpcode, Opcode.length);
             copyFromTo(toReturn, NumOfUsers, Opcode.length + messageOpcode.length);
             copyFromTo(toReturn, UserNameListByteArray, Opcode.length + messageOpcode.length + NumOfUsers.length);
+            toReturn[toReturn.length - 1] = '\0';
         }
 
         // "normal" Ackmessage
@@ -175,12 +184,10 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             short s = 10;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((AckMessage) message).getMessageOpcode());
-          /*  byte[] optional = ((AckMessage) message).getOptional().getBytes();*/
-            toReturn = new byte[opcode.length + messageOpcode.length + 1];
+            toReturn = new byte[opcode.length + messageOpcode.length];
             copyFromTo(toReturn, opcode, 0);
             copyFromTo(toReturn, messageOpcode, opcode.length);
-            /*copyFromTo(toReturn, optional, opcode.length + messageOpcode.length);*/
-            toReturn[toReturn.length - 1] = '\0';
+
 
         }
         // Error message
@@ -188,10 +195,9 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             short s = 11;
             byte[] opcode = shortToBytes(s);
             byte[] messageOpcode = shortToBytes(((ErrorMessage) message).getOpcode());
-            toReturn = new byte[opcode.length + messageOpcode.length + 1];
+            toReturn = new byte[opcode.length + messageOpcode.length];
             copyFromTo(toReturn, opcode, 0);
             copyFromTo(toReturn, messageOpcode, opcode.length);
-            toReturn[toReturn.length - 1] = '\0';
         }
         return toReturn;
     }
