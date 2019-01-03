@@ -43,7 +43,7 @@ public class PostMessage extends Message {
 
     public void process(String toProcess) {
         int i = 0;
-        while (toProcess.charAt(i) != '\0') {
+        while (i <= toProcess.length() - 1 && toProcess.charAt(i) != '\0') {
             post += toProcess.charAt(i);
             i++;
         }

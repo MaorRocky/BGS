@@ -21,12 +21,12 @@ public class PrivateMessage extends Message {
 
     public void process(String toProcess) {
         int index = 0;
-        while (toProcess.charAt(index) != '\0') {
+        while (index <= toProcess.length() - 1 && toProcess.charAt(index) != '\0') {
             receiverUser = receiverUser + toProcess.charAt(index);
             index++;
         }
         index++;
-        while (toProcess.charAt(index) != '\0') {
+        while (index <= toProcess.length() - 1 && toProcess.charAt(index) != '\0') {
             content = content + toProcess.charAt(index);
             index++;
         }

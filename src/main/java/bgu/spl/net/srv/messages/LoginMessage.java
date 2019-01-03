@@ -20,13 +20,13 @@ public class LoginMessage extends Message {
 
     public void process(String toProcess) {
         int index = 0;
-        while (toProcess.charAt(index) != '\0') { //creating the userName
+        while (index <= toProcess.length() - 1 && toProcess.charAt(index) != '\0') { //creating the userName
             userName = userName + toProcess.charAt(index);
             index ++;
         }
         index++;
         //TODO check why popString returns extra two \0 in the end of the string
-        while (toProcess.charAt(index) != '\0') {
+        while (index <= toProcess.length() - 1 && toProcess.charAt(index) != '\0') {
             password = password + toProcess.charAt(index);
             index++;
         }

@@ -104,7 +104,6 @@ public class DataBase {
             clientNameToClientId.put(message.getUserName(), clientId);
             clientToPrivateMessageList.put(clientId, new LinkedList<>());
             userNamesList.add(message.getUserName());
-            System.out.println("(called from DB)i registered a new client:\n" + message.getUserName() +" "+ message.getPassword());
 
             return true;
         } else {

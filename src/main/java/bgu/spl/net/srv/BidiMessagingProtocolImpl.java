@@ -68,8 +68,6 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             password = message.getPassword();
             AckMessage ack = new AckMessage((short) 1, null);
             connections.send(connectionId, ack);
-            System.out.println(ack.getMessageOpcode());
-            System.out.println(ack.getType());
         } else {
             ErrorMessage error = new ErrorMessage((short) 1);
             connections.send(connectionId, error);
@@ -161,7 +159,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     }
 
     private void processStatMessage(StatMessage message) {
-        if (dataBase.isRegistered(connectionId) && dataBase.isLoggedIn(connectionId) && dataBase.isRegistered(dataBase.getIdFromUserName(message.getuserToCheck()))) {
+        if (dataBase.isRegistered(connectionId) && dataBase.isLoggedIn(connectionId) &&
+                dataBase.isRegistered(dataBase.getIdFromUserName(message.getuserToCheck()))) {
             int idToCheck = dataBase.getIdFromUserName(message.getuserToCheck());
             short numOfPosts = (short) dataBase.getClientsPostList(idToCheck).size();
             short numOfFollowers = (short) dataBase.getClientFollowersList(message.getuserToCheck()).size();

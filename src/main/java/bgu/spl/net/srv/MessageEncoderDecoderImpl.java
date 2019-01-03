@@ -4,6 +4,7 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.srv.messages.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 
 public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message> {
@@ -30,6 +31,8 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 if (nextZeroByteCounter == 2) {
                     toSend = new RegisterMessage(popString());
+                    System.out.println(((RegisterMessage) toSend).getUserName());
+                    System.out.println(((RegisterMessage) toSend).getPassword());
                 }
                 break;
 
@@ -84,8 +87,8 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             case 8:
                 if (nextByte == '\0') {
                     toSend = new StatMessage(popString());
+
                 }
-                System.out.println(toSend.getType());
                 break;
 
         }
@@ -212,8 +215,10 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
 
     private String popString() {
         String result = new String(bytes, 2, length, StandardCharsets.UTF_8);
+        bytes = new byte[1 << 10];
         length = 0;
         nextZeroByteCounter = 0;
+        result = result.substring(0, result.length()-3);
         return result;
     }
 
@@ -230,6 +235,21 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         for (int i = 0; i < toCopy.length; i++) {
             arr[i + from] = toCopy[i];
         }
+    }
+
+    private static String cleanSpaces(String str) {
+        boolean c = true;
+        int i = str.length()-1;
+        while (c) {
+            if (str.substring(i, i+1).equals(" ")) {
+                str = str.substring(0, i);
+                i--;
+            }
+            else {
+                c = false;
+            }
+        }
+        return str;
     }
 
 

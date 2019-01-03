@@ -22,12 +22,12 @@ public class RegisterMessage extends Message {
 
     public void process(String toProcess) {
         int index = 0;
-        while (toProcess.charAt(index) != '\0') { //creating the userName
+        while (index <= toProcess.length() - 1 && toProcess.charAt(index) != '\0') { //creating the userName
             userName = userName + toProcess.charAt(index);
             index ++;
         }
         index++;
-        while (toProcess.charAt(index) != '\0') {
+        while (index <= toProcess.length() - 1 && toProcess.charAt(index) != '\0') {
             password = password + toProcess.charAt(index);
             index++;
         }
