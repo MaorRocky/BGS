@@ -71,6 +71,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             System.out.println("password is : " + password);
             AckMessage ack = new AckMessage((short) 1, null);
             connections.send(connectionId, ack);
+            System.out.println(ack.getMessageOpcode());
+            System.out.println(ack.getType());
         } else {
             ErrorMessage error = new ErrorMessage((short) 1);
             connections.send(connectionId, error);
