@@ -35,8 +35,8 @@ public class FollowMessage extends Message {
         else if (toProcess.charAt(0) == '1') {
             follow = false;
         }
-        int index = 3;
-        while (index < toProcess.length()) {
+
+        /*while (index < toProcess.length()) {
             if (toProcess.charAt(index) != '\0' && (toProcess.charAt(index) != ' ')) {
                 nameToAdd = nameToAdd + toProcess.charAt(index);
             }
@@ -46,6 +46,19 @@ public class FollowMessage extends Message {
                 nameToAdd = "";
             }
             index++;
+        }*/
+        String temp = "";
+        int lastWordindex = 3;
+        for (int i = 3; i < toProcess.length(); i++) {
+            if (toProcess.charAt(i) == '\0') {
+                temp = toProcess.substring(lastWordindex, i);
+                usersToFollow.add(temp);
+                lastWordindex = i + 1;
+            }
+            if (i == toProcess.length()-1) {
+                temp = toProcess.substring(lastWordindex);
+                usersToFollow.add(temp);
+            }
         }
     }
 

@@ -12,9 +12,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     private Connections connections;
     private String userName;
     private String password;
+    boolean terminate;
 
     public BidiMessagingProtocolImpl(DataBase dataBase) {
         this.dataBase = dataBase;
+        terminate = false;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     @Override
     public boolean shouldTerminate() {
-        return false;
+        return terminate;
     }
 
     private void processRegisterMessage(RegisterMessage message) {
@@ -89,6 +91,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             dataBase.logOut(connectionId);
             AckMessage ack = new AckMessage((short) 3, null);
             connections.send(connectionId, ack);
+            terminate = true;
         } else {
             ErrorMessage error = new ErrorMessage((short) 3);
             connections.send(connectionId, error);

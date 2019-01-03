@@ -4,7 +4,6 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.srv.messages.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 
 public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message> {
@@ -218,7 +217,8 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         bytes = new byte[1 << 10];
         length = 0;
         nextZeroByteCounter = 0;
-        result = result.substring(0, result.length()-3);
+        if (result.length() > 3)
+            result = result.substring(0, result.length() - 3);
         return result;
     }
 

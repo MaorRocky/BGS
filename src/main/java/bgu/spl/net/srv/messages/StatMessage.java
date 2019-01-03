@@ -13,7 +13,7 @@ public class StatMessage extends Message {
 
 
     public void process(String toProcess) {
-        userToCheck = toProcess.substring(0, toProcess.length()-1);
+        userToCheck = toProcess;
     }
 
     @Override
