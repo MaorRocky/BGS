@@ -38,12 +38,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     nextZeroByteCounter++;
                 }
                 if (nextZeroByteCounter == 2) {
-                    //String check = popString();
-                    //System.out.println(check);
                     toSend = new LoginMessage(popString());
-                    System.out.println(toSend.getType());
-                    System.out.println(((LoginMessage) toSend).getUserName());
-                    System.out.println(((LoginMessage) toSend).getPassword());
                 }
                 break;
 
