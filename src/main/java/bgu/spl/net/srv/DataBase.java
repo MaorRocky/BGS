@@ -1,10 +1,6 @@
 package bgu.spl.net.srv;
 
-import bgu.spl.net.srv.messages.LoginMessage;
-import bgu.spl.net.srv.messages.PostMessage;
-import bgu.spl.net.srv.messages.PrivateMessage;
-import bgu.spl.net.srv.messages.RegisterMessage;
-
+import bgu.spl.net.srv.messages.*;
 
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,41 +33,46 @@ public class DataBase {
      *  clientToPricateMessageList is a hsshmap which links to each user his privateMessageList.
      *  */
 
-    private ConcurrentHashMap<Integer, Boolean> registeredClients;
-    private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword;
-    private ConcurrentHashMap<Integer, Boolean> loggedinClients;
+    private ConcurrentHashMap<String, Boolean> registeredClients;
+    //private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword;
+    private ConcurrentHashMap<String, String> clientUserNameToPassword;
+    private ConcurrentHashMap<String, Boolean> loggedinClients;
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList;
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers;
-    private ConcurrentHashMap<Integer, LinkedList<PostMessage>> clientToPostList;
-    private ConcurrentHashMap<String, Integer> clientNameToClientId;
-    private ConcurrentHashMap<Integer, LinkedList<PrivateMessage>> clientToPrivateMessageList;
+    private ConcurrentHashMap<String, LinkedList<PostMessage>> clientToPostList;
+    //private ConcurrentHashMap<String, Integer> clientNameToClientId;
+    private ConcurrentHashMap<String, LinkedList<PrivateMessage>> clientToPrivateMessageList;
+    private ConcurrentHashMap<String, Integer> clientUserNameToCurrentHandlerId;
+    private ConcurrentHashMap<String, LinkedList<Message>> clientUserNameToUnReceivedMessages;
     private LinkedList<String> userNamesList;
 
     public DataBase() {
         registeredClients = new ConcurrentHashMap<>();
-        clientToUserNameAndPassword = new ConcurrentHashMap<>();
+        //clientToUserNameAndPassword = new ConcurrentHashMap<>();
         loggedinClients = new ConcurrentHashMap<>();
         clientToFollowList = new ConcurrentHashMap<>();
         clientToFollowers = new ConcurrentHashMap<>();
         clientToPostList = new ConcurrentHashMap<>();
-        clientNameToClientId = new ConcurrentHashMap<>();
+        //clientNameToClientId = new ConcurrentHashMap<>();
         clientToPrivateMessageList = new ConcurrentHashMap<>();
         userNamesList = new LinkedList<>();
-
+        clientUserNameToPassword = new ConcurrentHashMap<>();
+        clientUserNameToCurrentHandlerId = new ConcurrentHashMap<>();
+        clientUserNameToUnReceivedMessages = new ConcurrentHashMap<>();
     }
 
 
-    public boolean isRegistered(Integer clientId) {
-        if (registeredClients.containsKey(clientId)) {
-            return registeredClients.get(clientId);
+    public boolean isRegistered(String clientName) {
+        if (registeredClients.containsKey(clientName)) {
+            return registeredClients.get(clientName);
         } else {
             return false;
         }
     }
 
-    public boolean isLoggedIn(Integer clientId) {
-        if (loggedinClients.containsKey(clientId)) {
-            return loggedinClients.get(clientId);
+    public boolean isLoggedIn(String clientName) {
+        if (loggedinClients.containsKey(clientName)) {
+            return loggedinClients.get(clientName);
         } else {
             return false;
         }
@@ -85,25 +86,29 @@ public class DataBase {
         }
     }
 
-    public LinkedList<PostMessage> getClientsPostList(Integer clientId) {
-        if (clientToPostList.containsKey(clientId)) {
-            return clientToPostList.get(clientId);
+    public LinkedList<PostMessage> getClientsPostList(String clientName) {
+        if (clientToPostList.containsKey(clientName)) {
+            return clientToPostList.get(clientName);
         } else {
             return null;
         }
     }
 
-    public boolean registerClient(Integer clientId, RegisterMessage message) {
-        if (!registeredClients.containsKey(clientId)) {
-            clientToUserNameAndPassword.put(clientId, new Pair<>(message.getUserName(), message.getPassword()));
-            registeredClients.put(clientId, true);
-            loggedinClients.put(clientId, false);
+    public boolean registerClient(int connectionId, RegisterMessage message) {
+        if (!registeredClients.containsKey(message.getUserName())) {
+            //clientToUserNameAndPassword.put(clientId, new Pair<>(message.getUserName(), message.getPassword()));
+            registeredClients.put(message.getUserName(), true);
+            loggedinClients.put(message.getUserName(), false);
             clientToFollowList.put(message.getUserName(), new LinkedList<>());
             clientToFollowers.put(message.getUserName(), new LinkedList<>());
-            clientToPostList.put(clientId, new LinkedList<>());
-            clientNameToClientId.put(message.getUserName(), clientId);
-            clientToPrivateMessageList.put(clientId, new LinkedList<>());
+            clientToPostList.put(message.getUserName(), new LinkedList<>());
+            //clientNameToClientId.put(message.getUserName(), clientId);
+            clientToPrivateMessageList.put(message.getUserName(), new LinkedList<>());
             userNamesList.add(message.getUserName());
+            clientUserNameToPassword.put(message.getUserName(), message.getPassword());
+            clientUserNameToCurrentHandlerId.put(message.getUserName(), connectionId);
+            clientUserNameToUnReceivedMessages.put(message.getUserName(), new LinkedList<>());
+
 
             return true;
         } else {
@@ -111,10 +116,26 @@ public class DataBase {
         }
     }
 
-    public boolean login(Integer clientId, LoginMessage msg) {
-        if (checkUserNameAndPassword(clientId, msg.getUserName(), msg.getPassword())) {
-            if (!isLoggedIn(clientId)) {
-                loggedinClients.replace(clientId, true);
+    public void addUnReceivedMessage(String userName, Message message) {
+        if (clientUserNameToUnReceivedMessages.containsKey(userName)) {
+            clientUserNameToUnReceivedMessages.get(userName).add(message);
+        }
+    }
+
+    public LinkedList<Message> getUnReceivedMessages(String userName) {
+        if (clientUserNameToUnReceivedMessages.containsKey(userName)) {
+            LinkedList<Message> toReturn = clientUserNameToUnReceivedMessages.get(userName);
+            clientUserNameToUnReceivedMessages.replace(userName, new LinkedList<>());
+            return toReturn;
+        }
+        return null;
+    }
+
+    public boolean login(LoginMessage msg) {
+        if (registeredClients.containsKey(msg.getUserName())
+                && clientUserNameToPassword.get(msg.getUserName()).equals(msg.getPassword())) {
+            if (!isLoggedIn(msg.getUserName())) {
+                loggedinClients.replace(msg.getUserName(), true);
                 return true;
             }
         }
@@ -159,31 +180,31 @@ public class DataBase {
 
     }
 
-    private boolean checkUserNameAndPassword(Integer clientId, String userName, String password) {
-        return (clientToUserNameAndPassword.get(clientId).getFirst().equals(userName)) &
-                (clientToUserNameAndPassword.get(clientId).getSecond().equals(password));
+   // private boolean checkUserNameAndPassword(Integer clientId, String userName, String password) {
+    //    return (clientToUserNameAndPassword.get(clientId).getFirst().equals(userName)) &
+    //            (clientToUserNameAndPassword.get(clientId).getSecond().equals(password));
+   // }
+
+    public void logOut(String clientName) {
+        loggedinClients.replace(clientName, false);
     }
 
-    public void logOut(int clientID) {
-        loggedinClients.replace(clientID, false);
-    }
 
-
-    public int getIdFromUserName(String userName) {
-        if (clientNameToClientId.containsKey(userName))
-            return clientNameToClientId.get(userName);
+    public int getCurrentHandlerIdFromUserName(String userName) {
+        if (clientUserNameToCurrentHandlerId.containsKey(userName))
+            return clientUserNameToCurrentHandlerId.get(userName);
         else return -1;
     }
 
-    public void addPost(Integer clientId, PostMessage post) {
-        if (clientToPostList.containsKey(clientId)) {
-            clientToPostList.get(clientId).add(post);
+    public void addPost(String clientName, PostMessage post) {
+        if (clientToPostList.containsKey(clientName)) {
+            clientToPostList.get(clientName).add(post);
         }
     }
 
-    public void addPrivateMessage(Integer clientId, PrivateMessage privateMessage) {
-        if (clientToPrivateMessageList.containsKey(clientId)) {
-            clientToPrivateMessageList.get(clientId).add(privateMessage);
+    public void addPrivateMessage(String clientName, PrivateMessage privateMessage) {
+        if (clientToPrivateMessageList.containsKey(clientName)) {
+            clientToPrivateMessageList.get(clientName).add(privateMessage);
         }
     }
 
