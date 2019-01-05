@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public interface Server<T> extends Closeable {
 
     /**
-     * The main loop of the server, Starts listening and handling new clients.
+     * The TPCMain loop of the server, Starts listening and handling new clients.
      */
     void serve();
 
