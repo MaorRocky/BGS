@@ -91,6 +91,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             dataBase.logOut(connectionId);
             AckMessage ack = new AckMessage((short) 3, null);
             connections.send(connectionId, ack);
+            connections.disconnect(connectionId);
             terminate = true;
         } else {
             ErrorMessage error = new ErrorMessage((short) 3);

@@ -33,10 +33,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     public void disconnect(int connectionId) {
         if (clients.containsKey(connectionId)) {
-            try {
-                clients.get(connectionId).close();
-            }
-            catch (IOException e){}
             clients.remove(connectionId);
         }
     }

@@ -116,7 +116,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
 
     @Override
     public void send(T msg) {
-
+        writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
     }
 
     private static void releaseBuffer(ByteBuffer buff) {
