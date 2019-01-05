@@ -34,13 +34,11 @@ public class DataBase {
      *  */
 
     private ConcurrentHashMap<String, Boolean> registeredClients;
-    //private ConcurrentHashMap<Integer, Pair<String, String>> clientToUserNameAndPassword;
     private ConcurrentHashMap<String, String> clientUserNameToPassword;
     private ConcurrentHashMap<String, Boolean> loggedinClients;
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowList;
     private ConcurrentHashMap<String, LinkedList<String>> clientToFollowers;
     private ConcurrentHashMap<String, LinkedList<PostMessage>> clientToPostList;
-    //private ConcurrentHashMap<String, Integer> clientNameToClientId;
     private ConcurrentHashMap<String, LinkedList<PrivateMessage>> clientToPrivateMessageList;
     private ConcurrentHashMap<String, Integer> clientUserNameToCurrentHandlerId;
     private ConcurrentHashMap<String, LinkedList<Message>> clientUserNameToUnReceivedMessages;
@@ -48,12 +46,10 @@ public class DataBase {
 
     public DataBase() {
         registeredClients = new ConcurrentHashMap<>();
-        //clientToUserNameAndPassword = new ConcurrentHashMap<>();
         loggedinClients = new ConcurrentHashMap<>();
         clientToFollowList = new ConcurrentHashMap<>();
         clientToFollowers = new ConcurrentHashMap<>();
         clientToPostList = new ConcurrentHashMap<>();
-        //clientNameToClientId = new ConcurrentHashMap<>();
         clientToPrivateMessageList = new ConcurrentHashMap<>();
         userNamesList = new LinkedList<>();
         clientUserNameToPassword = new ConcurrentHashMap<>();
@@ -68,6 +64,7 @@ public class DataBase {
         } else {
             return false;
         }
+
     }
 
     public boolean isLoggedIn(String clientName) {
@@ -96,13 +93,11 @@ public class DataBase {
 
     public boolean registerClient(int connectionId, RegisterMessage message) {
         if (!registeredClients.containsKey(message.getUserName())) {
-            //clientToUserNameAndPassword.put(clientId, new Pair<>(message.getUserName(), message.getPassword()));
             registeredClients.put(message.getUserName(), true);
             loggedinClients.put(message.getUserName(), false);
             clientToFollowList.put(message.getUserName(), new LinkedList<>());
             clientToFollowers.put(message.getUserName(), new LinkedList<>());
             clientToPostList.put(message.getUserName(), new LinkedList<>());
-            //clientNameToClientId.put(message.getUserName(), clientId);
             clientToPrivateMessageList.put(message.getUserName(), new LinkedList<>());
             userNamesList.add(message.getUserName());
             clientUserNameToPassword.put(message.getUserName(), message.getPassword());
@@ -118,15 +113,19 @@ public class DataBase {
 
     public void addUnReceivedMessage(String userName, Message message) {
         if (clientUserNameToUnReceivedMessages.containsKey(userName)) {
-            clientUserNameToUnReceivedMessages.get(userName).add(message);
+            synchronized (clientUserNameToUnReceivedMessages.get(userName)) {
+                clientUserNameToUnReceivedMessages.get(userName).add(message);
+            }
         }
     }
 
     public LinkedList<Message> getUnReceivedMessages(String userName) {
         if (clientUserNameToUnReceivedMessages.containsKey(userName)) {
-            LinkedList<Message> toReturn = clientUserNameToUnReceivedMessages.get(userName);
-            clientUserNameToUnReceivedMessages.replace(userName, new LinkedList<>());
-            return toReturn;
+            synchronized (clientUserNameToUnReceivedMessages.get(userName)) {
+                LinkedList<Message> toReturn = clientUserNameToUnReceivedMessages.get(userName);
+                clientUserNameToUnReceivedMessages.replace(userName, new LinkedList<>());
+                return toReturn;
+            }
         }
         return null;
     }
@@ -147,9 +146,13 @@ public class DataBase {
 
     public String addFollower(String clientName, String clientToFollow) {
         String addedFollower = "";
-        if (!clientToFollowList.get(clientName).contains(clientToFollow)) {
-            clientToFollowList.get(clientName).addLast(clientToFollow);
-            addedFollower = clientToFollow;
+        if (clientToFollowList.containsKey(clientName)) {
+            synchronized (clientToFollowList.get(clientName)) {
+                if (!clientToFollowList.get(clientName).contains(clientToFollow)) {
+                    clientToFollowList.get(clientName).addLast(clientToFollow);
+                    addedFollower = clientToFollow;
+                }
+            }
         }
         if (clientToFollowers.containsKey(clientToFollow)) {
             if (!clientToFollowers.get(clientToFollow).contains(clientName)) {
