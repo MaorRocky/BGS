@@ -9,7 +9,7 @@ public class TPCMain {
     public static void main(String[] args) {
 
         DataBase dataBase = new DataBase();
-        Server.threadPerClient(7777,
+        Server.threadPerClient(Integer.parseInt(args[0]),
                 () -> new BidiMessagingProtocolImpl(dataBase),
                 () -> new MessageEncoderDecoderImpl()
         ).serve();
