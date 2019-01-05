@@ -137,12 +137,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 namesString += name + '\0';
             }
             byte[] userNameListString = namesString.getBytes();
-            toReturn = new byte[opcode.length + messageOpcode.length + numOfUsers.length + userNameListString.length + 1];
+            toReturn = new byte[opcode.length + messageOpcode.length + numOfUsers.length + userNameListString.length];
             copyFromTo(toReturn, opcode, 0);
             copyFromTo(toReturn, messageOpcode, opcode.length);
             copyFromTo(toReturn, numOfUsers, opcode.length + messageOpcode.length);
             copyFromTo(toReturn, userNameListString, opcode.length + messageOpcode.length + numOfUsers.length);
-            toReturn[toReturn.length - 1] = '\0';
 
 
         } else if (message instanceof AckStatMessage) {

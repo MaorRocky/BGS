@@ -5,6 +5,7 @@ public class StatMessage extends Message {
 
     public StatMessage(String toProcess) {
         process(toProcess);
+        System.out.println("i just open a new stat message");
     }
 
     public String getuserToCheck() {
