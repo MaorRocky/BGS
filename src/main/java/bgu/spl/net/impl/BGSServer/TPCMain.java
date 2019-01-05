@@ -14,9 +14,5 @@ public class TPCMain {
                 () -> new MessageEncoderDecoderImpl()
         ).serve();
 
-        //Server.reactor(10, 7777,
-          //      () -> new BidiMessagingProtocolImpl(dataBase),
-            //    () -> new MessageEncoderDecoderImpl()
-        //).serve();
     }
 }
