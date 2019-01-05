@@ -164,7 +164,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
             for (String UserName : ((AckUserListMessage) message).getUserList()) {
                 UserNameListString += UserName + '\0';
             }
-            System.out.println("num of users :  "+ ((AckUserListMessage) message).getNumOfUsers());
             byte[] UserNameListByteArray = UserNameListString.getBytes();
             toReturn = new byte[Opcode.length + messageOpcode.length + NumOfUsers.length + UserNameListByteArray.length];
             copyFromTo(toReturn, Opcode, 0);
