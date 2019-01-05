@@ -23,6 +23,7 @@ public class PostMessage extends Message {
     }
 
     private void findTaggedUsers() {
+
         String tmp = post;
         StringBuffer buffer = new StringBuffer(tmp);
         while (buffer.indexOf("@") != -1) {

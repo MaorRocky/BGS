@@ -105,9 +105,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             LinkedList<String> addedOrRemovedFollowers = new LinkedList<>();
             if (message.isFollow()) {
                 for (String followUser : usersToFollow) {
-                    String temp = dataBase.addFollower(userName, followUser);
-                    if (!temp.equals(""))
-                        addedOrRemovedFollowers.add(temp);
+                    if (dataBase.isRegistered(dataBase.getIdFromUserName(followUser))) {
+                        String temp = dataBase.addFollower(userName, followUser);
+                        if (!temp.equals(""))
+                            addedOrRemovedFollowers.add(temp);
+                    }
                 }
             } else {
                 for (String unfollowUser : message.getUsersToFollow()) {
