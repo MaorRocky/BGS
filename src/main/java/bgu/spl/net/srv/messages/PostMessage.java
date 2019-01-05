@@ -23,12 +23,13 @@ public class PostMessage extends Message {
     }
 
     private void findTaggedUsers() {
+
         String tmp = post;
         StringBuffer buffer = new StringBuffer(tmp);
         while (buffer.indexOf("@") != -1) {
             String tagToAdd = "";
             int tag = buffer.indexOf("@") + 1;
-            int len = tmp.length();
+            int len = buffer.length();
             while (tag < len && buffer.charAt(tag) != ' ') {
                 tagToAdd = tagToAdd + buffer.charAt(tag);
                 tag++;
