@@ -30,8 +30,6 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 }
                 if (nextZeroByteCounter == 2) {
                     toSend = new RegisterMessage(popString());
-                    System.out.println(((RegisterMessage) toSend).getUserName());
-                    System.out.println(((RegisterMessage) toSend).getPassword());
                 }
                 break;
 
