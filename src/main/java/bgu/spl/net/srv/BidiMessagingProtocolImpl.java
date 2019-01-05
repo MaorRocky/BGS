@@ -78,6 +78,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     private void processLoginMessage(LoginMessage message) {
         if (dataBase.isRegistered(message.getUserName()) && dataBase.login(message)) { // checks userName, password and if the client is already logged in
+            userName = message.getUserName();
+            password = message.getPassword();
             AckMessage ack = new AckMessage((short) 2, null);
             connections.send(connectionId, ack);
             LinkedList<Message> unReadMessages = dataBase.getUnReceivedMessages(userName);
